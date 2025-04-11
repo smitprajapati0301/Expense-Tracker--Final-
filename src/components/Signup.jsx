@@ -6,11 +6,24 @@ import {
     signInWithPopup,
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import { useNavigate, Link } from 'react-router-dom';
+import {
+    MDBBtn,
+    MDBContainer,
+    MDBRow,
+    MDBCol,
+    MDBCard,
+    MDBCardBody,
+    MDBInput,
+    MDBIcon,
+} from 'mdb-react-ui-kit';
 
 const Signup = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const navigate = useNavigate();
 
     const handleSignup = async (e) => {
         e.preventDefault();
@@ -24,7 +37,7 @@ const Signup = () => {
                 email: email,
             });
 
-            alert('Signup Successful');
+            navigate('/Hello');
         } catch (error) {
             console.log(error);
             alert(error.message);
@@ -44,6 +57,7 @@ const Signup = () => {
             });
 
             alert('Google Signup Successful');
+            navigate('/Hello');
         } catch (error) {
             console.log(error);
             alert(error.message);
@@ -51,45 +65,76 @@ const Signup = () => {
     };
 
     return (
-        <div className="p-4 max-w-md mx-auto">
-            <h2 className="text-xl font-bold mb-4">Sign Up</h2>
-            <form onSubmit={handleSignup} className="flex flex-col gap-4">
-                <input
-                    type="text"
-                    placeholder="Full Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="border p-2 rounded"
-                    required
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="border p-2 rounded"
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="border p-2 rounded"
-                    required
-                />
-                <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-                    Sign Up
-                </button>
-                <button
-                    type="button"
-                    onClick={handleGoogleSignup}
-                    className="bg-red-500 text-white p-2 rounded"
-                >
-                    Sign Up with Google
-                </button>
-            </form>
-        </div>
+        <MDBContainer fluid>
+            <MDBRow className='d-flex justify-content-center align-items-center h-100'>
+                <MDBCol col='12'>
+                    <MDBCard className='bg-dark text-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '400px' }}>
+                        <MDBCardBody className='p-5 d-flex flex-column align-items-center mx-auto w-100'>
+                            <h2 className='fw-bold mb-2 text-uppercase'>Sign Up</h2>
+                            <p className='text-white-50 mb-4'>Create your account</p>
+
+                            <form onSubmit={handleSignup} className='w-100'>
+                                <MDBInput
+                                    wrapperClass='mb-4 mx-1 w-100'
+                                    labelClass='text-white'
+                                    label='Full Name'
+                                    type='text'
+                                    size='lg'
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                />
+                                <MDBInput
+                                    wrapperClass='mb-4 mx-1 w-100'
+                                    labelClass='text-white'
+                                    label='Email'
+                                    type='email'
+                                    size='lg'
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                                <MDBInput
+                                    wrapperClass='mb-4 mx-1 w-100'
+                                    labelClass='text-white'
+                                    label='Password'
+                                    type='password'
+                                    size='lg'
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+
+                                <MDBBtn outline className='mx-2 w-100' color='white' size='lg' type='submit'>
+                                    Sign Up
+                                </MDBBtn>
+                            </form>
+
+                            <p className='text-white-50 mt-3'>or</p>
+
+                            <MDBBtn
+                                onClick={handleGoogleSignup}
+                                className='w-100 mt-2'
+                                color='danger'
+                                size='lg'
+                            >
+                                <MDBIcon fab icon='google' className='me-2' />
+                                Sign Up with Google
+                            </MDBBtn>
+
+                            <div className='mt-4'>
+                                <p className='mb-0'>
+                                    Already have an account?{' '}
+                                    <Link to='/login' className='text-white-50 fw-bold'>
+                                        Log In
+                                    </Link>
+                                </p>
+                            </div>
+                        </MDBCardBody>
+                    </MDBCard>
+                </MDBCol>
+            </MDBRow>
+        </MDBContainer>
     );
 };
 
