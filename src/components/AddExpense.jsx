@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { db } from './firebase'; // adjust the path if needed
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { db } from './firebase'; // Adjust if needed
+import {
+  collection,
+  addDoc,
+  Timestamp,
+  query,
+  where,
+  onSnapshot
+} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const AddExpense = () => {
@@ -10,6 +17,10 @@ const AddExpense = () => {
   const [remarks, setRemarks] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [expenses, setExpenses] = useState([]);
+
+  const auth = getAuth();
+  const user = auth.currentUser;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,9 +28,6 @@ const AddExpense = () => {
     setMessage('');
 
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
       if (!user) {
         throw new Error('User not logged in');
       }
@@ -35,7 +43,6 @@ const AddExpense = () => {
       };
 
       await addDoc(collection(db, 'expenses'), expenseData);
-      console.log('✅ Expense added:', expenseData);
 
       // Clear form
       setAmount('');
@@ -51,16 +58,36 @@ const AddExpense = () => {
     }
   };
 
+  useEffect(() => {
+    if (!user) return;
+
+    const q = query(
+      collection(db, 'expenses'),
+      where('userId', '==', user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const expenseList = [];
+      querySnapshot.forEach((doc) => {
+        expenseList.push({ id: doc.id, ...doc.data() });
+      });
+      setExpenses(expenseList);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
   return (
     <div className="max-w-xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Add New Expense</h2>
 
       {message && (
         <div
-          className={`mb-4 p-2 rounded text-sm font-medium ${message.startsWith('✅')
-            ? 'bg-green-100 text-green-700'
-            : 'bg-red-100 text-red-700'
-            }`}
+          className={`mb-4 p-2 rounded text-sm font-medium ${
+            message.startsWith('✅')
+              ? 'bg-green-100 text-green-700'
+              : 'bg-red-100 text-red-700'
+          }`}
         >
           {message}
         </div>
@@ -125,6 +152,27 @@ const AddExpense = () => {
           {loading ? 'Adding...' : 'Add Expense'}
         </button>
       </form>
+
+      <div className="mt-8">
+        <h3 className="text-xl font-semibold mb-2">Your Expenses</h3>
+        {expenses.length === 0 ? (
+          <p className="text-gray-500">No expenses added yet.</p>
+        ) : (
+          <ul className="space-y-2">
+            {expenses.map((expense) => (
+              <li
+                key={expense.id}
+                className="border rounded p-3 bg-gray-50"
+              >
+                <div><strong>Amount:</strong> ₹{expense.amount}</div>
+                <div><strong>Type:</strong> {expense.type}</div>
+                <div><strong>Date:</strong> {expense.date.toDate().toDateString()}</div>
+                <div><strong>Remarks:</strong> {expense.remarks || '-'}</div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };
