@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import { auth, db } from "./firebase";
-import {
-    createUserWithEmailAndPassword,
-    GoogleAuthProvider,
-    signInWithPopup,
-} from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from './firebase';
 import { useNavigate } from 'react-router-dom';
 import {
     MDBBtn,
@@ -18,49 +13,29 @@ import {
     MDBIcon,
 } from 'mdb-react-ui-kit';
 
-const Signup = () => {
-    const [name, setName] = useState('');
+const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
     const navigate = useNavigate();
 
-    const handleSignup = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
-            await setDoc(doc(db, 'users', user.uid), {
-                name: name,
-                email: email,
-            });
-
-
+            await signInWithEmailAndPassword(auth, email, password);
             navigate('/AddExpense');
         } catch (error) {
-            console.log(error);
+            console.error(error);
             alert(error.message);
         }
     };
 
-    const handleGoogleSignup = async () => {
+    const handleGoogleLogin = async () => {
         const provider = new GoogleAuthProvider();
-
         try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-
-            await setDoc(doc(db, 'users', user.uid), {
-                name: user.displayName,
-                email: user.email,
-            });
-
-            alert('Google Signup Successful');
+            await signInWithPopup(auth, provider);
             navigate('/AddExpense');
         } catch (error) {
-            console.log(error);
+            console.error(error);
             alert(error.message);
         }
     };
@@ -71,21 +46,10 @@ const Signup = () => {
                 <MDBCol col='12'>
                     <MDBCard className='bg-dark text-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '400px' }}>
                         <MDBCardBody className='p-5 d-flex flex-column align-items-center mx-auto w-100'>
+                            <h2 className='fw-bold mb-2 text-uppercase'>Log In</h2>
+                            <p className='text-white-50 mb-4'>Sign in to your account</p>
 
-                            <h2 className='fw-bold mb-2 text-uppercase'>Sign Up</h2>
-                            <p className='text-white-50 mb-4'>Create your account</p>
-
-                            <form onSubmit={handleSignup} className='w-100'>
-                                <MDBInput
-                                    wrapperClass='mb-4 mx-1 w-100'
-                                    labelClass='text-white'
-                                    label='Full Name'
-                                    type='text'
-                                    size='lg'
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                />
+                            <form onSubmit={handleLogin} className='w-100'>
                                 <MDBInput
                                     wrapperClass='mb-4 mx-1 w-100'
                                     labelClass='text-white'
@@ -106,33 +70,31 @@ const Signup = () => {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
-
                                 <MDBBtn outline className='mx-2 w-100' color='white' size='lg' type='submit'>
-                                    Sign Up
+                                    Log In
                                 </MDBBtn>
                             </form>
 
                             <p className='text-white-50 mt-3'>or</p>
 
                             <MDBBtn
-                                onClick={handleGoogleSignup}
+                                onClick={handleGoogleLogin}
                                 className='w-100 mt-2'
                                 color='danger'
                                 size='lg'
                             >
                                 <MDBIcon fab icon='google' className='me-2' />
-                                Sign Up with Google
+                                Log In with Google
                             </MDBBtn>
 
                             <div className='mt-4'>
                                 <p className='mb-0'>
-                                    Already have an account?{' '}
-                                    <a href="/login" class="text-white-50 fw-bold">
-                                        Log In
+                                    Don't have an account?{' '}
+                                    <a href='/' className='text-white-50 fw-bold'>
+                                        Sign Up
                                     </a>
                                 </p>
                             </div>
-
                         </MDBCardBody>
                     </MDBCard>
                 </MDBCol>
@@ -141,4 +103,4 @@ const Signup = () => {
     );
 };
 
-export default Signup;
+export default Login;
