@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import {
     MDBBtn,
@@ -22,7 +22,7 @@ const Login = () => {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            navigate('/AddExpense');
+            navigate('/dashboard');
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -33,7 +33,7 @@ const Login = () => {
         const provider = new GoogleAuthProvider();
         try {
             await signInWithPopup(auth, provider);
-            navigate('/AddExpense');
+            navigate('/dashboard');
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -87,6 +87,7 @@ const Login = () => {
                                 Log In with Google
                             </MDBBtn>
 
+                            
                             <div className='mt-4'>
                                 <p className='mb-0'>
                                     Don't have an account?{' '}

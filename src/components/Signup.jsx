@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { auth, db } from "./firebase";
+import { auth, db } from "../firebase";
 import {
     createUserWithEmailAndPassword,
     GoogleAuthProvider,
@@ -38,7 +38,7 @@ const Signup = () => {
             });
 
 
-            navigate('/AddExpense');
+            navigate('/dashboard');
         } catch (error) {
             console.log(error);
             alert(error.message);
@@ -58,7 +58,7 @@ const Signup = () => {
             });
 
             alert('Google Signup Successful');
-            navigate('/AddExpense');
+            navigate('/dashboard');
         } catch (error) {
             console.log(error);
             alert(error.message);
