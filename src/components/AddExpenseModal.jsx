@@ -3,6 +3,7 @@ import { db } from '../firebase';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
+
 const AddExpenseModal = ({ onClose }) => {
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -49,6 +50,9 @@ const AddExpenseModal = ({ onClose }) => {
         </form>
       </div>
     </div>
+
+ 
+
   );
 };
 
