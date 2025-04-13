@@ -20,6 +20,8 @@ import {
     MDBContainer as MDBNavContainer,
     MDBNavbarBrand
 } from 'mdb-react-ui-kit';
+import track from '../assets/1.png';
+
 
 const Signup = () => {
     const [name, setName] = useState('');
@@ -73,7 +75,11 @@ const Signup = () => {
             <MDBNavbar light bgColor='dark' className='shadow-sm'>
                 <MDBNavContainer fluid>
                     <MDBNavbarBrand href='/' className='text-white fw-bold fs-4'>
-                       Trackify
+                      <img
+                        className="max-h-10 mt-1 w-auto align-middle"
+                        src={track}
+                        alt="Trackify"
+                      />
                     </MDBNavbarBrand>
                 </MDBNavContainer>
             </MDBNavbar>

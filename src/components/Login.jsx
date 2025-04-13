@@ -11,7 +11,12 @@ import {
     MDBCardBody,
     MDBInput,
     MDBIcon,
+    MDBNavbar,
+    MDBContainer as MDBNavContainer,
+    MDBNavbarBrand
 } from 'mdb-react-ui-kit';
+import track from '../assets/1.png';
+    
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -41,6 +46,21 @@ const Login = () => {
     };
 
     return (
+<>
+ {/* Header */}
+            <MDBNavbar light bgColor='dark' className='shadow-sm'>
+                <MDBNavContainer fluid>
+                    <MDBNavbarBrand href='/' className='text-white fw-bold fs-4'>
+                      <img
+                        className="max-h-10 mt-1 w-auto align-middle"
+                        src={track}
+                        alt="Trackify"
+                      />
+                    </MDBNavbarBrand>
+                </MDBNavContainer>
+            </MDBNavbar>
+
+        
         <MDBContainer fluid>
             <MDBRow className='d-flex justify-content-center align-items-center h-100'>
                 <MDBCol col='12'>
@@ -101,6 +121,7 @@ const Login = () => {
                 </MDBCol>
             </MDBRow>
         </MDBContainer>
+        </>
     );
 };
 
