@@ -1,5 +1,40 @@
+/* Apply Apple-style system font stack and small base tweaks */
+:root {
+  --bg: #fbfbfc;
+  --text: #0f1315;
+}
+
+/* Tailwind directives (if present) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Inter, system-ui, "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  /* subtle default input styles to match Apple aesthetic */
+  input, textarea, select, button {
+    font-family: inherit;
+    font-size: 15px;
+  }
+}
+
+/* small helpers for mobile spacing */
+@media (max-width: 640px) {
+  .shadow-thin { box-shadow: 0 4px 14px rgba(19,24,29,0.04); }
+  .shadow-subtle { box-shadow: 0 6px 18px rgba(19,24,29,0.05); }
+}
 
 @plugin "daisyui";

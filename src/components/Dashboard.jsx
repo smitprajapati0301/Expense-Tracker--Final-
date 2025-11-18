@@ -1,942 +1,366 @@
-// import React, { useState, useEffect } from 'react';
-// import { getAuth, onAuthStateChanged } from 'firebase/auth';
-// import { db } from '../firebase';
-// import {
-//   collection,
-//   query,
-//   where,
-//   onSnapshot,
-//   deleteDoc,
-//   doc,
-//   Timestamp,
-//   updateDoc,
-//   addDoc,
-// } from 'firebase/firestore';
-// import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-// import { ThemeToggle } from './ThemeToggle';
-// // import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-
-// const Dashboard = () => {
-//   const [expenses, setExpenses] = useState([]);
-//   const [filteredExpenses, setFilteredExpenses] = useState([]);
-//   const [showForm, setShowForm] = useState(false);
-//   const [amount, setAmount] = useState('');
-//   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-//   const [type, setType] = useState('');
-//   const [remarks, setRemarks] = useState('');
-//   const [user, setUser] = useState(null);
-//   const [editId, setEditId] = useState(null);
-//   const [message, setMessage] = useState('');
-
-//   // Filter state
-//   const [filterType, setFilterType] = useState('');
-//   const [filterDate, setFilterDate] = useState('');
-//   const [minAmount, setMinAmount] = useState('');
-//   const [maxAmount, setMaxAmount] = useState('');
-//   const [filterOpen, setFilterOpen] = useState(false);
-
-
-
-//   const [sortOption, setSortOption] = useState('');
-
-
-//   useEffect(() => {
-//     const auth = getAuth();
-//     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-//       if (currentUser) {
-//         setUser(currentUser);
-//         const q = query(
-//           collection(db, 'expenses'),
-//           where('userId', '==', currentUser.uid)
-//         );
-//         const unsubscribe = onSnapshot(q, (snapshot) => {
-//           const data = snapshot.docs.map((doc) => ({
-//             id: doc.id,
-//             ...doc.data(),
-//           }));
-//           setExpenses(data);
-//         });
-//         return () => unsubscribe();
-//       }
-//     });
-//     return () => unsubscribeAuth();
-//   }, []);
-
-//   useEffect(() => {
-//     let filtered = expenses;
-
-//     if (filterType) {
-//       filtered = filtered.filter((e) => e.type === filterType);
-//     }
-//     if (filterDate) {
-//       filtered = filtered.filter(
-//         (e) => e.date.toDate().toISOString().split('T')[0] === filterDate
-//       );
-//     }
-//     if (minAmount) {
-//       filtered = filtered.filter((e) => e.amount >= parseFloat(minAmount));
-//     }
-//     if (maxAmount) {
-//       filtered = filtered.filter((e) => e.amount <= parseFloat(maxAmount));
-//     }
-
-//     setFilteredExpenses(filtered);
-//   }, [expenses, filterType, filterDate, minAmount, maxAmount]);
-
-
-//   useEffect(() => {
-//     let sorted = [...expenses];
-  
-//     if (sortOption === 'amountAsc') {
-//       sorted.sort((a, b) => a.amount - b.amount);
-//     } else if (sortOption === 'amountDesc') {
-//       sorted.sort((a, b) => b.amount - a.amount);
-//     } else if (sortOption === 'dateAsc') {
-//       sorted.sort((a, b) => a.date.toDate() - b.date.toDate());
-//     } else if (sortOption === 'dateDesc') {
-//       sorted.sort((a, b) => b.date.toDate() - a.date.toDate());
-//     }
-  
-//     setFilteredExpenses(sorted); // Or setExpenses(sorted) if you're not using filters
-//   }, [expenses, sortOption]);
-  
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     if (!user) return;
-
-//     const expenseData = {
-//       amount: parseFloat(amount),
-//       date: Timestamp.fromDate(new Date(date)),
-//       type,
-//       remarks,
-//       createdAt: Timestamp.now(),
-//       userId: user.uid,
-//       userEmail: user.email,
-//     };
-
-//     try {
-//       if (editId) {
-//         await updateDoc(doc(db, 'expenses', editId), expenseData);
-//         setMessage('✅ Expense updated!');
-//         setEditId(null);
-//       } else {
-//         await addDoc(collection(db, 'expenses'), expenseData);
-//         setMessage('✅ Expense added!');
-//       }
-
-//       setAmount('');
-//       setDate(new Date().toISOString().split('T')[0]);
-//       setType('');
-//       setRemarks('');
-//       setShowForm(false);
-//     } catch (err) {
-//       console.error('Error:', err.message);
-//       setMessage(`❌ ${err.message}`);
-//     }
-//   };
-
-//   const handleEdit = (expense) => {
-//     setAmount(expense.amount);
-//     setDate(expense.date.toDate().toISOString().split('T')[0]);
-//     setType(expense.type);
-//     setRemarks(expense.remarks);
-//     setEditId(expense.id);
-//     setShowForm(true);
-//   };
-
-//   const handleDelete = async (id) => {
-//     await deleteDoc(doc(db, 'expenses', id));
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-pink-50 to-emerald-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-white font-mono">
-//       {/* Navbar */}
-//       <nav className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 sm:px-6 bg-white dark:bg-gray-900 shadow-md">
-//         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wide font-[Fira_Code] text-indigo-600 dark:text-indigo-300">
-//           Trackify
-//         </h1>
-//         <div className="flex items-center gap-3">
-//           <ThemeToggle />
-//           <button
-//             className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition shadow"
-//             onClick={() => setShowForm(!showForm)}
-//             title="Add Expense"
-//           >
-//             <FaPlus />
-//           </button>
-//         </div>
-//       </nav>
-
-//       {message && (
-//         <div className="mx-4 mt-4 px-4 py-2 text-sm font-semibold text-emerald-700 bg-emerald-100 dark:bg-emerald-800 dark:text-emerald-200 rounded shadow-sm text-center">
-//           {message}
-//         </div>
-//       )}
-
-//       {showForm && (
-//         <div className="max-w-md mx-auto mt-6 px-4 sm:px-6 py-6 bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700">
-//           <form onSubmit={handleSubmit} className="space-y-5 text-sm sm:text-base font-[Roboto_Mono]">
-//             <div className="space-y-1">
-//               <label htmlFor="amount" className="block text-gray-700 dark:text-gray-200 font-medium">
-//                 Amount
-//               </label>
-//               <input
-//                 id="amount"
-//                 type="number"
-//                 value={amount}
-//                 onChange={(e) => setAmount(e.target.value)}
-//                 className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-//                 placeholder="e.g. 120.00"
-//                 required
-//               />
-//             </div>
-
-//             <div className="space-y-1">
-//               <label htmlFor="date" className="block text-gray-700 dark:text-gray-200 font-medium">
-//                 Date
-//               </label>
-//               <input
-//                 id="date"
-//                 type="date"
-//                 value={date}
-//                 onChange={(e) => setDate(e.target.value)}
-//                 className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-//                 required
-//               />
-//             </div>
-
-//             <div className="space-y-1">
-//               <label htmlFor="type" className="block text-gray-700 dark:text-gray-200 font-medium">
-//                 Type
-//               </label>
-//               <select
-//                 id="type"
-//                 value={type}
-//                 onChange={(e) => setType(e.target.value)}
-//                 className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-//                 required
-//               >
-//                 <option value="">Choose category</option>
-//                 <option value="Food">Food</option>
-//                 <option value="Transport">Transport</option>
-//                 <option value="Shopping">Shopping</option>
-//                 <option value="Bills">Bills</option>
-//                 <option value="Other">Other</option>
-//               </select>
-//             </div>
-
-//             <div className="space-y-1">
-//               <label htmlFor="remarks" className="block text-gray-700 dark:text-gray-200 font-medium">
-//                 Remarks
-//               </label>
-//               <textarea
-//                 id="remarks"
-//                 value={remarks}
-//                 onChange={(e) => setRemarks(e.target.value)}
-//                 className="w-full p-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-//                 placeholder="Add a note (optional)"
-//               ></textarea>
-//             </div>
-
-//             <button
-//               className="w-full bg-gray-900 dark:bg-gray-700 text-white font-bold font-[Fira_Code] p-3 rounded-lg hover:opacity-90 transition"
-//             >
-//               {editId ? 'Update Expense' : 'Add Expense'}
-//             </button>
-//           </form>
-//         </div>
-//       )}
-
-//       {/* Filter Button */}
-//       <button
-//         onClick={() => setFilterOpen(!filterOpen)}
-//         className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition mt-4 ml-3"
-//       >
-//         <span>Filter</span>
-//         <svg
-//           className={`ml-2 transition-transform transform ${filterOpen ? 'rotate-180' : ''}`}
-//           xmlns="http://www.w3.org/2000/svg"
-//           width="20"
-//           height="20"
-//           viewBox="0 0 20 20"
-//           fill="none"
-//           stroke="currentColor"
-//           strokeWidth="2"
-//           strokeLinecap="round"
-//           strokeLinejoin="round"
-//         >
-//           <path d="M6 9l6 6 6-6"></path>
-//         </svg>
-//       </button>
-
-
-//       <select
-//   value={sortOption}
-//   onChange={(e) => setSortOption(e.target.value)}
-//   className="p-2 border rounded-md bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm"
-// >
-//   <option value="">Sort By</option>
-//   <option value="amountAsc">Amount (Low → High)</option>
-//   <option value="amountDesc">Amount (High → Low)</option>
-//   <option value="dateAsc">Date (Old → New)</option>
-//   <option value="dateDesc">Date (New → Old)</option>
-// </select>
-
-
-//       {/* Filter Options */}
-//       {filterOpen && (
-//         <div className="mt-4 bg-white dark:bg-gray-800 shadow-lg rounded-md p-4 space-y-4 w-full sm:w-auto">
-//           <div className="space-y-2">
-//             <label htmlFor="type" className="block text-gray-700 dark:text-gray-200">
-//               Type
-//             </label>
-//             <select
-//               id="type"
-//               value={filterType}
-//               onChange={(e) => setFilterType(e.target.value)}
-//               className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-//             >
-//               <option value="">All Types</option>
-//               <option value="Food">Food</option>
-//               <option value="Transport">Transport</option>
-//               <option value="Shopping">Shopping</option>
-//               <option value="Bills">Bills</option>
-//               <option value="Other">Other</option>
-//             </select>
-//           </div>
-
-//           <div className="space-y-2">
-//             <label htmlFor="date" className="block text-gray-700 dark:text-gray-200">
-//               Date
-//             </label>
-//             <input
-//               type="date"
-//               id="date"
-//               value={filterDate}
-//               onChange={(e) => setFilterDate(e.target.value)}
-//               className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-//             />
-//           </div>
-
-//           <div className="space-y-2">
-//             <label htmlFor="minAmount" className="block text-gray-700 dark:text-gray-200">
-//               Min Amount
-//             </label>
-//             <input
-//               type="number"
-//               id="minAmount"
-//               value={minAmount}
-//               onChange={(e) => setMinAmount(e.target.value)}
-//               placeholder="Enter Min Amount"
-//               className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-//             />
-//           </div>
-
-//           <div className="space-y-2">
-//             <label htmlFor="maxAmount" className="block text-gray-700 dark:text-gray-200">
-//               Max Amount
-//             </label>
-//             <input
-//               type="number"
-//               id="maxAmount"
-//               value={maxAmount}
-//               onChange={(e) => setMaxAmount(e.target.value)}
-//               placeholder="Enter Max Amount"
-//               className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-//             />
-//           </div>
-
-//           <div className="flex justify-center">
-//             <button
-//               onClick={() => {
-//                 setFilterType('');
-//                 setFilterDate('');
-//                 setMinAmount('');
-//                 setMaxAmount('');
-//               }}
-//               className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-//             >
-//               Clear Filters
-//             </button>
-
-//             {/* <button
-//               onClick={() => setFilterOpen(false)}
-//               className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
-//             >
-//               Apply Filters
-//             </button> */}
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Expense List */}
-//       <div className="mt-6 space-y-4">
-//         {(filterOpen ? filteredExpenses : expenses).map((expense) => (
-//           <div
-//             key={expense.id}
-//             className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md space-y-2"
-//           >
-//             <div className="flex justify-between items-center">
-//               <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-300">
-//                 {expense.type}
-//               </h3>
-//               <span className="text-gray-600 dark:text-gray-400">
-//                 {new Date(expense.date.toDate()).toLocaleDateString()}
-//               </span>
-//             </div>
-//             <p className="text-sm text-gray-600 dark:text-gray-400">
-//               {expense.remarks || 'No remarks'}
-//             </p>
-//             <div className="flex justify-between items-center mt-2">
-//               <span className="font-semibold text-indigo-600 dark:text-indigo-300">
-//                 ${expense.amount.toFixed(2)}
-//               </span>
-//               <div className="flex space-x-2">
-//                 <button
-//                   onClick={() => handleEdit(expense)}
-//                   className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-500 dark:hover:text-indigo-400"
-//                 >
-//                   <FaEdit />
-//                 </button>
-//                 <button
-//                   onClick={() => handleDelete(expense.id)}
-//                   className="text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300"
-//                 >
-//                   <FaTrash />
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Dashboard;
-import track from '../assets/1.png';
-import React, { useState, useEffect, useCallback } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { db } from '../firebase';
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  deleteDoc,
-  doc,
-  Timestamp,
-  updateDoc,
-  addDoc,
-} from 'firebase/firestore';
-import { FaPlus, FaEdit, FaTrash, FaFileExcel, FaChartPie } from 'react-icons/fa';
+import React, { useEffect, useState, useMemo } from 'react';
 import { ThemeToggle } from './ThemeToggle';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import '../index.css';
+import track from '../assets/1.png';                      // added
+import { signOut } from 'firebase/auth';                  // added
+import { auth } from '../firebase';                       // added
+import { useNavigate } from 'react-router-dom';           // added
 
-
-// Removed: import 'chart.js/auto';  // This import is not needed and can cause issues
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#8884d8', '#a8328e'];
-
-const Dashboard = () => {
-  const [expenses, setExpenses] = useState([]);
-  const [filteredExpenses, setFilteredExpenses] = useState([]);
+export default function Dashboard() {
+  const navigate = useNavigate();                         // added
+  const [query, setQuery] = useState('');
+  const [form, setForm] = useState({
+    amount: '',
+    date: new Date().toISOString().split('T')[0],
+    type: '',
+    remarks: '',
+  });
+  const [items, setItems] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [type, setType] = useState('');
-  const [remarks, setRemarks] = useState('');
-  const [user, setUser] = useState(null);
-  const [editId, setEditId] = useState(null);
-  const [message, setMessage] = useState('');
-  const [showChart, setShowChart] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
-  // Filter state
-  const [filterType, setFilterType] = useState('');
-  const [filterDate, setFilterDate] = useState('');
-  const [minAmount, setMinAmount] = useState('');
-  const [maxAmount, setMaxAmount] = useState('');
-  const [filterOpen, setFilterOpen] = useState(false);
-
-  const [sortOption, setSortOption] = useState('');
-
-  const exportToExcel = () => {
-    if (filteredExpenses.length === 0) {
-      alert("No data to export!");
-      return;
-    }
-
-    const data = filteredExpenses.map(expense => ({
-      Type: expense.type,
-      Date: new Date(expense.date.toDate()).toLocaleDateString(),
-      Amount: expense.amount,
-      Remarks: expense.remarks || '',
-    }));
-
-    import('xlsx').then(xlsx => {
-      const worksheet = xlsx.utils.json_to_sheet(data);
-      const workbook = xlsx.utils.book_new();
-      xlsx.utils.book_append_sheet(workbook, worksheet, 'Expenses');
-      xlsx.writeFile(workbook, 'expenses.xlsx');
-    }).catch(error => {
-      console.error("Error exporting to Excel:", error);
-      alert("Failed to export data. Please check console for details.");
-    });
-  };
+  // additional filters
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        const q = query(
-          collection(db, 'expenses'),
-          where('userId', '==', currentUser.uid)
-        );
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-          const data = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setExpenses(data);
-        });
-        return () => unsubscribe();
-      }
-    });
-    return () => unsubscribeAuth();
+    // demo data — replace with your Firestore fetch as needed
+    setItems([
+      { id: '1', amount: 12.5, date: new Date().toISOString(), type: 'Coffee', remarks: 'Morning espresso' },
+      { id: '2', amount: 1200, date: new Date().toISOString(), type: 'Rent', remarks: 'August' },
+      { id: '3', amount: 8.75, date: new Date().toISOString(), type: 'Transport', remarks: 'Taxi' },
+      { id: '4', amount: 45.0, date: new Date().toISOString(), type: 'Groceries', remarks: 'Weekly shop' },
+    ]);
   }, []);
 
-  useEffect(() => {
-    let filtered = [...expenses];
-
-    if (filterType) {
-      filtered = filtered.filter((e) => e.type === filterType);
-    }
-    if (filterDate) {
-      filtered = filtered.filter(
-        (e) => e.date.toDate().toISOString().split('T')[0] === filterDate
-      );
-    }
-    if (minAmount) {
-      filtered = filtered.filter((e) => e.amount >= parseFloat(minAmount));
-    }
-    if (maxAmount) {
-      filtered = filtered.filter((e) => e.amount <= parseFloat(maxAmount));
-    }
-
-    let sorted = [...filtered];
-    if (sortOption === 'amountAsc') {
-      sorted.sort((a, b) => a.amount - b.amount);
-    } else if (sortOption === 'amountDesc') {
-      sorted.sort((a, b) => b.amount - a.amount);
-    } else if (sortOption === 'dateAsc') {
-      sorted.sort((a, b) => a.date.toDate() - b.date.toDate());
-    } else if (sortOption === 'dateDesc') {
-      sorted.sort((a, b) => b.date.toDate() - a.date.toDate());
-    }
-
-    setFilteredExpenses(sorted);
-  }, [expenses, filterType, filterDate, minAmount, maxAmount, sortOption]);
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!user) return;
+    const entry = { id: editingId || Date.now().toString(), ...form };
+    setItems((prev) => {
+      if (editingId) return prev.map((p) => (p.id === editingId ? entry : p));
+      return [entry, ...prev];
+    });
+    setForm({ amount: '', date: new Date().toISOString().split('T')[0], type: '', remarks: '' });
+    setShowForm(false);
+    setEditingId(null);
+    // ensure mobile UI closes when saving
+    setMobileFiltersOpen(false);
+  };
 
-    const expenseData = {
-      amount: parseFloat(amount),
-      date: Timestamp.fromDate(new Date(date)),
-      type,
-      remarks,
-      createdAt: Timestamp.now(),
-      userId: user.uid,
-      userEmail: user.email,
-    };
+  const handleEdit = (it) => {
+    setForm({ amount: it.amount, date: it.date.split('T')[0], type: it.type, remarks: it.remarks });
+    setEditingId(it.id);
+    setShowForm(true);
+    // on mobile bring up form area
+    setMobileFiltersOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
+  const handleDelete = (it) => setItems((prev) => prev.filter((x) => x.id !== it.id));
+
+  // available categories from items
+  const categories = useMemo(() => {
+    const setCat = new Set(items.map((i) => i.type || 'Uncategorized'));
+    return ['all', ...Array.from(setCat)];
+  }, [items]);
+
+  // filtered view by search + category + date range
+  const filtered = useMemo(() => {
+    const q = (query || '').toLowerCase();
+    const s = startDate ? new Date(startDate) : null;
+    const e = endDate ? new Date(endDate) : null;
+    return items.filter((it) => {
+      const inQuery =
+        (it.type || '').toLowerCase().includes(q) ||
+        (it.remarks || '').toLowerCase().includes(q) ||
+        String(it.amount).includes(q);
+      const inCategory = categoryFilter === 'all' || (it.type || 'Uncategorized') === categoryFilter;
+      const d = new Date(it.date);
+      const inStart = !s || d >= s;
+      const inEnd = !e || d <= e;
+      return inQuery && inCategory && inStart && inEnd;
+    });
+  }, [items, query, categoryFilter, startDate, endDate]);
+
+  // Export CSV for provided array
+  const exportCSV = (rows, filename = 'expenses.csv') => {
+    if (!rows || rows.length === 0) return;
+    const headers = ['id', 'amount', 'date', 'type', 'remarks'];
+    const csv = [
+      headers.join(','),
+      ...rows.map((r) =>
+        headers.map((h) => {
+          const v = r[h] ?? '';
+          // escape quotes
+          return `"${String(v).replace(/"/g, '""')}"`;
+        }).join(',')
+      ),
+    ].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  // build monthly totals for last 6 months
+  const monthlyTotals = useMemo(() => {
+    const now = new Date();
+    const buckets = [];
+    for (let i = 5; i >= 0; i--) {
+      const dt = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${dt.getFullYear()}-${dt.getMonth() + 1}`;
+      buckets.push({ key, label: dt.toLocaleString(undefined, { month: 'short' }), total: 0 });
+    }
+    items.forEach((it) => {
+      const d = new Date(it.date);
+      const k = `${d.getFullYear()}-${d.getMonth() + 1}`;
+      const b = buckets.find((x) => x.key === k);
+      if (b) b.total += Number(it.amount) || 0;
+    });
+    return buckets;
+  }, [items]);
+
+  const maxTotal = Math.max(1, ...monthlyTotals.map((b) => b.total));
+
+  const handleLogout = async () => {                      // added
     try {
-      if (editId) {
-        await updateDoc(doc(db, 'expenses', editId), expenseData);
-        setMessage('✅ Expense updated!');
-        setEditId(null);
-      } else {
-        await addDoc(collection(db, 'expenses'), expenseData);
-        setMessage('✅ Expense added!');
-      }
-
-      setAmount('');
-      setDate(new Date().toISOString().split('T')[0]);
-      setType('');
-      setRemarks('');
-      setShowForm(false);
+      await signOut(auth);
+      navigate('/login');
     } catch (err) {
-      console.error('Error:', err.message);
-      setMessage(`❌ ${err.message}`);
+      console.error('Logout failed:', err);
     }
   };
-
-  const handleEdit = (expense) => {
-    setAmount(expense.amount);
-    setDate(expense.date.toDate().toISOString().split('T')[0]);
-    setType(expense.type);
-    setRemarks(expense.remarks);
-    setEditId(expense.id);
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id) => {
-    await deleteDoc(doc(db, 'expenses', id));
-  };
-
-  const getChartData = useCallback(() => {
-    const typeTotals = {};
-    filteredExpenses.forEach(expense => {
-      const expenseType = expense.type;
-      typeTotals[expenseType] = (typeTotals[expenseType] || 0) + expense.amount;
-    });
-
-    const chartData = Object.entries(typeTotals).map(([type, total]) => ({
-      type,
-      total,
-    }));
-    return chartData;
-  }, [filteredExpenses]);
-
-  const chartData = getChartData();
-
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-pink-50 to-emerald-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-white font-mono">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 sm:px-6 bg-white dark:bg-gray-900 shadow-md">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wide font-[Fira_Code] text-indigo-600 dark:text-indigo-300">
-      
-        <img
-  className="max-h-10 mt-1 w-auto align-middle"
-  src={track}
-  alt="Trackify"
-/>
+    <div className="min-h-screen w-full bg-neutral-50 dark:bg-neutral-900 p-4 sm:p-6">
+      <div className="max-w-7xl mx-auto">
+        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-4">
+            {/* replaced ET block with Trackify logo */}
+            <img src={track} alt="Trackify" className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-md shadow-thin" />
+            <div>
+              <h1 className="text-lg sm:text-2xl font-semibold text-neutral-900 dark:text-neutral-50">Trackify</h1>
+              <p className="text-xs sm:text-sm text-neutral-500">Simple • Calm • Focused</p>
+            </div>
+          </div>
 
-
-        </h1>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <button
-            className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition shadow"
-            onClick={() => setShowForm(!showForm)}
-            title="Add Expense"
-          >
-            <FaPlus />
-          </button>
-        </div>
-      </nav>
-
-      {message && (
-        <div className="mx-4 mt-4 px-4 py-2 text-sm font-semibold text-emerald-700 bg-emerald-100 dark:bg-emerald-800 dark:text-emerald-200 rounded shadow-sm text-center">
-          {message}
-        </div>
-      )}
-
-      {showForm && (
-        <div className="max-w-md mx-auto mt-6 px-4 sm:px-6 py-6 bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700">
-          <form onSubmit={handleSubmit} className="space-y-5 text-sm sm:text-base font-[Roboto_Mono]">
-            <div className="space-y-1">
-              <label htmlFor="amount" className="block text-gray-700 dark:text-gray-200 font-medium">
-                Amount
-              </label>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <input
-                id="amount"
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-                placeholder="e.g. 120.00"
-                required
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by category, notes, amount..."
+                className="flex-1 sm:w-72 text-sm bg-white/60 dark:bg-neutral-900/60 border border-neutral-200 rounded-full px-4 py-2 shadow-thin placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:ring-offset-1"
               />
             </div>
 
-            <div className="space-y-1">
-              <label htmlFor="date" className="block text-gray-700 dark:text-gray-200 font-medium">
-                Date
-              </label>
-              <input
-                id="date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-                required
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label htmlFor="type" className="block text-gray-700 dark:text-gray-200 font-medium">
-                Type
-              </label>
-              <select
-                id="type"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-                required
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMobileFiltersOpen((s) => !s)}
+                className="sm:hidden px-3 py-2 rounded-full border border-neutral-200 bg-white text-sm"
+                aria-expanded={mobileFiltersOpen}
               >
-                <option value="">Choose category</option>
-                <option value="Food">Food</option>
-                <option value="Transport">Transport</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Bills">Bills</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+                Filters
+              </button>
 
-            <div className="space-y-1">
-              <label htmlFor="remarks" className="block text-gray-700 dark:text-gray-200 font-medium">
-                Remarks
-              </label>
-              <textarea
-                id="remarks"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-                className="w-full p-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-                placeholder="Add a note (optional)"
-              ></textarea>
-            </div>
+              <ThemeToggle />
 
-            <button
-              className="w-full bg-gray-900 dark:bg-gray-700 text-white font-bold font-[Fira_Code] p-3 rounded-lg hover:opacity-90 transition"
-            >
-              {editId ? 'Update Expense' : 'Add Expense'}
-            </button>
-          </form>
-        </div>
-      )}
+              {/* Desktop "New" */}
+              <button onClick={() => { setShowForm(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hidden sm:inline-flex px-3 py-2 rounded-full bg-accent text-white text-sm shadow-thin">New</button>
 
-      {/* Filter and Sort Controls */}
-      <div className="flex mt-4 ml-3 space-x-2 items-center">
-        {/* Filter Button */}
-        <button
-          onClick={() => setFilterOpen(!filterOpen)}
-          className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
-        >
-          <span>Filter</span>
-          <svg
-            className={`ml-2 transition-transform transform ${filterOpen ? 'rotate-180' : ''}`}
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M6 9l6 6 6-6"></path>
-          </svg>
-        </button>
-
-        {/* Sort Dropdown */}
-        <select
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-          className="p-2 border rounded-md bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm"
-        >
-          <option value="">Sort By</option>
-          <option value="amountAsc">Amount (Low → High)</option>
-          <option value="amountDesc">Amount (High → Low)</option>
-          <option value="dateAsc">Date (Old → New)</option>
-          <option value="dateDesc">Date (New → Old)</option>
-        </select>
-
-        {/* Excel Export Button */}
-        <button
-          onClick={exportToExcel}
-          className="bg-green-600 text-white p-2 rounded-md hover:bg-green-700 transition shadow"
-          title="Export to Excel"
-        >
-          <FaFileExcel />
-        </button>
-        {/* Chart Button */}
-        <button
-          onClick={() => setShowChart(!showChart)}
-          className="bg-purple-600 text-white p-2 rounded-md hover:bg-purple-700 transition shadow"
-          title="Show Chart"
-        >
-          <FaChartPie />
-        </button>
-      </div>
-
-      {/* Filter Options */}
-      {filterOpen && (
-        <div className="mt-4 bg-white dark:bg-gray-800 shadow-lg rounded-md p-4 space-y-4 w-full sm:w-auto ml-3">
-          <div className="space-y-2">
-            <label htmlFor="filterType" className="block text-gray-700 dark:text-gray-200">
-              Type
-            </label>
-            <select
-              id="filterType"
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-            >
-              <option value="">All Types</option>
-              <option value="Food">Food</option>
-              <option value="Transport">Transport</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Bills">Bills</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="filterDate" className="block text-gray-700 dark:text-gray-200">
-              Date
-            </label>
-            <input
-              type="date"
-              id="filterDate"
-              value={filterDate}
-              onChange={(e) => setFilterDate(e.target.value)}
-              className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="minAmount" className="block text-gray-700 dark:text-gray-200">
-              Min Amount
-            </label>
-            <input
-              type="number"
-              id="minAmount"
-              value={minAmount}
-              onChange={(e) => setMinAmount(e.target.value)}
-              placeholder="Enter Min Amount"
-              className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="maxAmount" className="block text-gray-700 dark:text-gray-200">
-              Max Amount
-            </label>
-            <input
-              type="number"
-              id="maxAmount"
-              value={maxAmount}
-              onChange={(e) => setMaxAmount(e.target.value)}
-              placeholder="Enter Max Amount"
-              className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-            />
-          </div>
-
-          <div className="flex justify-center">
-            <button
-              onClick={() => {
-                setFilterType('');
-                setFilterDate('');
-                setMinAmount('');
-                setMaxAmount('');
-              }}
-              className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-      )}
-
-{showChart && (
-        <div className="mt-8 mx-auto w-full max-w-md h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={chartData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="total"
-                label={({
-                  cx,
-                  cy,
-                  midAngle,
-                  innerRadius,
-                  outerRadius,
-                  value,
-                  index
-                }) => {
-                  const RADIAN = Math.PI / 180;
-                  const radius = 25 + innerRadius + (outerRadius - innerRadius);
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill={COLORS[index % COLORS.length]}
-                      textAnchor={x > cx ? "start" : "end"}
-                      dominantBaseline="central"
-                    >
-                      {chartData[index].type} (${value.toFixed(2)})
-                    </text>
-                  );
-                }}
+              {/* Logout button */}
+              <button
+                onClick={handleLogout}
+                className="ml-2 px-3 py-2 rounded-full border border-neutral-200 bg-white text-sm hover:bg-neutral-50 transition"
+                title="Log out"
               >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Expense List */}
-      <div className="mt-6 space-y-4 px-4">
-        {filteredExpenses.map((expense) => (
-          <div
-            key={expense.id}
-            className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md space-y-2"
-          >
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-300">
-                {expense.type}
-              </h3>
-              <span className="text-gray-600 dark:text-gray-400">
-                {new Date(expense.date.toDate()).toLocaleDateString()}
-              </span>
+                Log out
+              </button>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {expense.remarks || 'No remarks'}
-            </p>
-            <div className="flex justify-between items-center mt-2">
-              <span className="font-semibold text-indigo-600 dark:text-indigo-300">
-                ${expense.amount.toFixed(2)}
-              </span>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleEdit(expense)}
-                  className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-500 dark:hover:text-indigo-400"
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  onClick={() => handleDelete(expense.id)}
-                  className="text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300"
-                >
-                  <FaTrash />
-                </button>
+          </div>
+        </header>
+
+        <main className="mt-4 grid grid-cols-1 lg:grid-cols-4 gap-4">
+          {/* Left column: on desktop shows form + filters; on mobile collapsible panels above list */}
+          <aside className="lg:col-span-1 space-y-4">
+            {/* Form panel - full width on mobile */}
+            <div className="bg-white dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-700 rounded-xl p-3 shadow-thin">
+              {showForm ? (
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      value={form.amount}
+                      onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
+                      placeholder="Amount"
+                      type="number"
+                      step="0.01"
+                      className="flex-1 px-3 py-2 rounded-lg border border-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-accent/30"
+                    />
+                    <input
+                      value={form.date}
+                      onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
+                      type="date"
+                      className="w-full sm:w-40 px-3 py-2 rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-accent/30"
+                    />
+                  </div>
+
+                  <input
+                    value={form.type}
+                    onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+                    placeholder="Category (e.g., Food, Rent)"
+                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-accent/30"
+                  />
+
+                  <textarea
+                    value={form.remarks}
+                    onChange={(e) => setForm((f) => ({ ...f, remarks: e.target.value }))}
+                    placeholder="Notes (optional)"
+                    rows="2"
+                    className="w-full px-3 py-2 rounded-lg border border-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-accent/30"
+                  />
+
+                  <div className="flex gap-2 justify-end">
+                    <button type="button" onClick={() => { setShowForm(false); setEditingId(null); }} className="px-3 py-1 rounded-full border border-neutral-200 text-sm">Cancel</button>
+                    <button type="submit" className="px-3 py-1 rounded-full bg-accent text-white text-sm">{editingId ? 'Update' : 'Save'}</button>
+                  </div>
+                </form>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-neutral-900 dark:text-neutral-50">Add Expense</h3>
+                    <p className="text-xs text-neutral-500">Quick and focused</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setShowForm(true)} className="px-3 py-1 rounded-full bg-accent text-white text-sm">New</button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Filters & Export - collapsible on mobile */}
+            <div className={`bg-white dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-700 rounded-xl p-3 shadow-thin transition-transform ${mobileFiltersOpen ? 'block' : 'hidden'} sm:block`}>
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium text-neutral-900 dark:text-neutral-50">Filters</h4>
+                <button className="sm:hidden text-xs text-neutral-500" onClick={() => setMobileFiltersOpen(false)}>Close</button>
+              </div>
+
+              <div className="mt-3 space-y-3">
+                <div>
+                  <label className="text-xs text-neutral-500">Category</label>
+                  <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg border border-neutral-200">
+                    {categories.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs text-neutral-500">From</label>
+                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg border border-neutral-200" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-neutral-500">To</label>
+                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-lg border border-neutral-200" />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 justify-between items-center">
+                  <button onClick={() => { setCategoryFilter('all'); setStartDate(''); setEndDate(''); setQuery(''); }} className="px-3 py-2 rounded-full border border-neutral-200 text-sm">Reset</button>
+                  <div className="flex gap-2">
+                    <button onClick={() => exportCSV(filtered, 'expenses_filtered.csv')} className="px-3 py-2 rounded-full border border-neutral-200 text-sm">Export Filtered</button>
+                    <button onClick={() => exportCSV(items, 'expenses_all.csv')} className="px-3 py-2 rounded-full bg-accent text-white text-sm">Export All</button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+
+            {/* Graph - keep compact on mobile */}
+            <div className="bg-white dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-700 rounded-xl p-3 shadow-thin">
+              <h4 className="text-sm font-medium text-neutral-900 dark:text-neutral-50">Last 6 months</h4>
+              <div className="mt-3">
+                <svg viewBox="0 0 140 60" className="w-full h-20">
+                  {monthlyTotals.map((b, i) => {
+                    const barWidth = 18;
+                    const gap = 4;
+                    const x = i * (barWidth + gap) + 6;
+                    const height = Math.round((b.total / maxTotal) * 44);
+                    const y = 50 - height;
+                    return (
+                      <g key={b.key} transform={`translate(${x},0)`}>
+                        <rect x="0" y={y} width={barWidth} height={height} rx="4" fill="url(#grad)" />
+                        <text x={barWidth / 2} y="56" fontSize="7" fill="#6b747a" textAnchor="middle">{b.label}</text>
+                      </g>
+                    );
+                  })}
+                  <defs>
+                    <linearGradient id="grad" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#2b7cff" stopOpacity="0.9" />
+                      <stop offset="100%" stopColor="#2b7cff" stopOpacity="0.25" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+
+                <div className="mt-2 text-xs text-neutral-500">Total this period: <span className="font-medium text-neutral-700 dark:text-neutral-50">${monthlyTotals.reduce((s, b) => s + b.total, 0).toFixed(2)}</span></div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Right/main content: expense cards */}
+          <section className="lg:col-span-3 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map((item) => (
+                <article key={item.id} className="w-full bg-white dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-700 rounded-xl p-3 shadow-subtle transition-transform duration-200 ease-gentle hover:translate-y-0.5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center text-accent font-medium">
+                        {item.type?.[0] ?? 'E'}
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-neutral-900 dark:text-neutral-50">{item.type || 'Expense'}</div>
+                        <div className="text-xs text-neutral-500 dark:text-neutral-300 mt-0.5">{item.remarks || 'No details'}</div>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">${Number(item.amount).toFixed(2)}</div>
+                      <div className="text-xs text-neutral-500 dark:text-neutral-300 mt-0.5">{new Date(item.date).toLocaleDateString()}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 mt-3">
+                    <button onClick={() => handleEdit(item)} className="text-xs px-3 py-1 rounded-full border border-neutral-200 text-neutral-700 hover:bg-neutral-50 transition">Edit</button>
+                    <button onClick={() => handleDelete(item)} className="text-xs px-3 py-1 rounded-full text-red-600 hover:bg-red-50 transition">Delete</button>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            {filtered.length === 0 && (
+              <div className="bg-white dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-700 rounded-xl p-6 text-center text-neutral-500">
+                No expenses match your filters.
+              </div>
+            )}
+          </section>
+        </main>
+
+        {/* Mobile floating New button */}
+        <button
+          onClick={() => { setShowForm(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          className="fixed bottom-6 right-4 z-50 inline-flex items-center justify-center sm:hidden w-14 h-14 rounded-full bg-accent text-white shadow-lg"
+          aria-label="Add expense"
+        >
+          +
+        </button>
       </div>
-      
     </div>
   );
-};
-
-export default Dashboard;
+}
