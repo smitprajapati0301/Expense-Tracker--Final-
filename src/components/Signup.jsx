@@ -1,163 +1,124 @@
 import React, { useState } from 'react';
-import { auth, db } from "../firebase";
-import {
-    createUserWithEmailAndPassword,
-    GoogleAuthProvider,
-    signInWithPopup,
-} from 'firebase/auth';
+import { Google as GoogleIcon } from '@mui/icons-material';
+import { Alert, Box, Button, Divider, Stack, TextField } from '@mui/material';
+import { auth, db } from '../firebase';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
-import {
-    MDBBtn,
-    MDBContainer,
-    MDBRow,
-    MDBCol,
-    MDBCard,
-    MDBCardBody,
-    MDBInput,
-    MDBIcon,
-    MDBNavbar,
-    MDBContainer as MDBNavContainer,
-    MDBNavbarBrand
-} from 'mdb-react-ui-kit';
-import track from '../assets/1.png';
-
+import { Link, useNavigate } from 'react-router-dom';
+import AuthLayout from './AuthLayout';
 
 const Signup = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleSignup = async (e) => {
         e.preventDefault();
+        setError('');
 
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
             await setDoc(doc(db, 'users', user.uid), {
-                name: name,
-                email: email,
+                name,
+                email,
             });
 
             navigate('/dashboard');
-        } catch (error) {
-            console.log(error);
-            alert(error.message);
+        } catch (signupError) {
+            console.log(signupError);
+            setError(signupError.message);
         }
     };
 
     const handleGoogleSignup = async () => {
         const provider = new GoogleAuthProvider();
+        setError('');
 
         try {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
 
             await setDoc(doc(db, 'users', user.uid), {
-                name: user.displayName,
+                name: user.displayName || name || 'New user',
                 email: user.email,
             });
 
-            alert('Google Signup Successful');
             navigate('/dashboard');
-        } catch (error) {
-            console.log(error);
-            alert(error.message);
+        } catch (signupError) {
+            console.log(signupError);
+            setError(signupError.message);
         }
     };
 
     return (
-        <>
-            {/* Header */}
-            <MDBNavbar light bgColor='dark' className='shadow-sm'>
-                <MDBNavContainer fluid>
-                    <MDBNavbarBrand href='/' className='text-white fw-bold fs-4'>
-                      <img
-                        className="max-h-10 mt-1 w-auto align-middle"
-                        src={track}
-                        alt="Trackify"
-                      />
-                    </MDBNavbarBrand>
-                </MDBNavContainer>
-            </MDBNavbar>
+        <AuthLayout
+            title="Create your account"
+            subtitle="Set up Trackify once and start logging expenses, goals, and savings in a single place."
+            helperTitle="Sign up"
+            helperText="Use your name, email, and a password to get started in minutes."
+            eyebrow="Trackify"
+        >
+            <Box component="form" onSubmit={handleSignup}>
+                <Stack spacing={2}>
+                    {error ? <Alert severity="error">{error}</Alert> : null}
 
-            {/* Signup Form */}
-            <MDBContainer fluid className='mt-4'>
-                <MDBRow className='d-flex justify-content-center align-items-center h-100'>
-                    <MDBCol col='12'>
-                        <MDBCard className='bg-dark text-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '400px' }}>
-                            <MDBCardBody className='p-5 d-flex flex-column align-items-center mx-auto w-100'>
+                    <TextField
+                        label="Full Name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        autoComplete="name"
+                        required
+                        fullWidth
+                    />
+                    <TextField
+                        label="Email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="email"
+                        required
+                        fullWidth
+                    />
+                    <TextField
+                        label="Password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="new-password"
+                        required
+                        fullWidth
+                    />
 
-                                <h2 className='fw-bold mb-2 text-uppercase'>Sign Up</h2>
-                                <p className='text-white-50 mb-4'>Create your account</p>
+                    <Button type="submit" variant="contained" size="large" fullWidth sx={{ py: 1.4, fontWeight: 700 }}>
+                        Create Account
+                    </Button>
 
-                                <form onSubmit={handleSignup} className='w-100'>
-                                    <MDBInput
-                                        wrapperClass='mb-4 mx-1 w-100'
-                                        labelClass='text-white'
-                                        label='Full Name'
-                                        type='text'
-                                        size='lg'
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        required
-                                    />
-                                    <MDBInput
-                                        wrapperClass='mb-4 mx-1 w-100'
-                                        labelClass='text-white'
-                                        label='Email'
-                                        type='email'
-                                        size='lg'
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                    />
-                                    <MDBInput
-                                        wrapperClass='mb-4 mx-1 w-100'
-                                        labelClass='text-white'
-                                        label='Password'
-                                        type='password'
-                                        size='lg'
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                    />
+                    <Divider sx={{ my: 0.5 }}>or</Divider>
 
-                                    <MDBBtn outline className='mx-2 w-100' color='white' size='lg' type='submit'>
-                                        Sign Up
-                                    </MDBBtn>
-                                </form>
+                    <Button
+                        onClick={handleGoogleSignup}
+                        variant="outlined"
+                        size="large"
+                        fullWidth
+                        startIcon={<GoogleIcon />}
+                        sx={{ py: 1.2, fontWeight: 700 }}
+                    >
+                        Continue with Google
+                    </Button>
 
-                                <p className='text-white-50 mt-3'>or</p>
-
-                                <MDBBtn
-                                    onClick={handleGoogleSignup}
-                                    className='w-100 mt-2'
-                                    color='danger'
-                                    size='lg'
-                                >
-                                    <MDBIcon fab icon='google' className='me-2' />
-                                    Sign Up with Google
-                                </MDBBtn>
-
-                                <div className='mt-4'>
-                                    <p className='mb-0'>
-                                        Already have an account?{' '}
-                                        <a href="/login" className="text-white-50 fw-bold">
-                                            Log In
-                                        </a>
-                                    </p>
-                                </div>
-
-                            </MDBCardBody>
-                        </MDBCard>
-                    </MDBCol>
-                </MDBRow>
-            </MDBContainer>
-        </>
+                    <Box sx={{ textAlign: 'center', pt: 1 }}>
+                        <Link to="/login" style={{ color: '#0f172a', fontWeight: 700, textDecoration: 'none' }}>
+                            Already have an account? Log in
+                        </Link>
+                    </Box>
+                </Stack>
+            </Box>
+        </AuthLayout>
     );
 };
 
