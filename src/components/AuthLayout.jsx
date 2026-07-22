@@ -1,93 +1,157 @@
 import React from 'react';
-import { AppBar, Box, Container, Grid, Paper, Stack, Toolbar, Typography } from '@mui/material';
 import track from '../assets/1.png';
 
 const featureItems = [
-  'Firebase email and Google sign-in',
-  'Clean expense tracking workflow',
-  'Responsive layout for mobile and desktop',
+  { icon: '🔒', text: 'Firebase email and Google sign-in' },
+  { icon: '📊', text: 'Clean expense tracking workflow' },
+  { icon: '📱', text: 'Responsive layout for mobile and desktop' },
 ];
 
 export default function AuthLayout({ title, subtitle, children, eyebrow, helperTitle, helperText }) {
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         minHeight: '100vh',
         background:
-          'radial-gradient(circle at top left, rgba(255, 180, 120, 0.18), transparent 30%), radial-gradient(circle at bottom right, rgba(93, 120, 255, 0.18), transparent 28%), linear-gradient(180deg, #08111f 0%, #0e1729 50%, #eef2ff 100%)',
+          'radial-gradient(circle at 10% 20%, rgba(33,112,228,0.25) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(0,108,73,0.15) 0%, transparent 35%), linear-gradient(160deg, #001a42 0%, #0058be 45%, #1a3a7a 100%)',
       }}
     >
-      <AppBar
-        position="static"
-        elevation={0}
-        sx={{
-          bgcolor: 'rgba(6, 10, 18, 0.72)',
+      {/* ── Navbar ── */}
+      <nav
+        style={{
+          background: 'rgba(0,20,60,0.55)',
           backdropFilter: 'blur(18px)',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          WebkitBackdropFilter: 'blur(18px)',
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
         }}
       >
-        <Toolbar sx={{ minHeight: 76 }}>
-          <Box component="a" href="/" sx={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
-            <Box component="img" src={track} alt="Trackify" sx={{ height: 34, width: 'auto' }} />
-          </Box>
-        </Toolbar>
-      </AppBar>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 72, display: 'flex', alignItems: 'center' }}>
+          <a href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', gap: 10 }}>
+            {/* Logo — unchanged */}
+            <img src={track} alt="Trackify" style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
+          </a>
+        </div>
+      </nav>
 
-      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
-        <Grid container spacing={4} alignItems="center">
-          <Grid item xs={12} md={6}>
-            <Stack spacing={3} sx={{ color: '#f8fbff', pr: { md: 4 } }}>
-              <Typography variant="overline" sx={{ letterSpacing: 2, color: 'rgba(255,255,255,0.72)' }}>
-                {eyebrow || 'Expense Tracker'}
-              </Typography>
-              <Typography component="h1" variant="h2" sx={{ fontWeight: 800, lineHeight: 1.03 }}>
-                {title}
-              </Typography>
-              <Typography variant="h6" sx={{ color: 'rgba(248,251,255,0.78)', maxWidth: 520, fontWeight: 400 }}>
-                {subtitle}
-              </Typography>
+      {/* ── Content ── */}
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px 64px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 48, alignItems: 'center' }}>
 
-              <Stack spacing={1.5} sx={{ pt: 1 }}>
-                {featureItems.map((item) => (
-                  <Typography key={item} sx={{ color: 'rgba(248,251,255,0.85)' }}>
-                    {item}
-                  </Typography>
-                ))}
-              </Stack>
-            </Stack>
-          </Grid>
+          {/* Left — Branding panel */}
+          <div style={{ color: '#f8fbff' }}>
+            {/* Eyebrow */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              marginBottom: 16, padding: '4px 12px',
+              background: 'rgba(255,255,255,0.12)',
+              borderRadius: 9999,
+              fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.85)',
+            }}>
+              ✦ {eyebrow || 'Trackify'}
+            </div>
 
-          <Grid item xs={12} md={6}>
-            <Paper
-              elevation={24}
-              sx={{
-                p: { xs: 3, sm: 4 },
-                borderRadius: 5,
-                overflow: 'hidden',
-                bgcolor: 'rgba(255,255,255,0.92)',
-                backdropFilter: 'blur(18px)',
-                border: '1px solid rgba(15, 23, 42, 0.08)',
+            {/* Headline */}
+            <h1 style={{
+              fontFamily: '-apple-system, "SF Pro Display", BlinkMacSystemFont, "Inter", "Helvetica Neue", sans-serif',
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontWeight: 700,
+              lineHeight: 1.05,
+              marginBottom: 16,
+              letterSpacing: '-0.025em',
+            }}>
+              {title}
+            </h1>
+
+            {/* Subtitle */}
+            <p style={{
+              fontFamily: '"Plus Jakarta Sans", sans-serif',
+              fontSize: '1.0625rem',
+              color: 'rgba(248,251,255,0.78)',
+              maxWidth: 480,
+              lineHeight: 1.65,
+              marginBottom: 32,
+            }}>
+              {subtitle}
+            </p>
+
+            {/* Feature list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {featureItems.map((item) => (
+                <div key={item.text} style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'rgba(248,251,255,0.88)' }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: 10,
+                    background: 'rgba(255,255,255,0.12)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 15, flexShrink: 0,
+                  }}>
+                    {item.icon}
+                  </div>
+                  <span style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', fontSize: '0.9375rem', fontWeight: 500 }}>
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Subtle decorative tagline */}
+            <p style={{
+              marginTop: 40,
+              fontFamily: '"Plus Jakarta Sans", sans-serif',
+              fontSize: '0.6875rem',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.35)',
+            }}>
+              Sophisticated Wealth Management
+            </p>
+          </div>
+
+          {/* Right — Form glass card */}
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div
+              className="glass-card"
+              style={{
+                width: '100%',
+                maxWidth: 440,
+                padding: '2.5rem',
+                boxShadow: '0 32px 80px rgba(0,0,0,0.22)',
               }}
             >
-              <Stack spacing={2.5}>
-                <Box>
-                  <Typography variant="overline" sx={{ color: 'text.secondary', letterSpacing: 2 }}>
-                    {helperTitle || 'Secure access'}
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 800, mt: 0.5, color: '#0f172a' }}>
-                    {title}
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1 }}>
-                    {helperText || subtitle}
-                  </Typography>
-                </Box>
+              {/* Card header */}
+              <div style={{ marginBottom: 24 }}>
+                <div style={{
+                  fontSize: '0.6875rem', fontWeight: 700,
+                  letterSpacing: '0.1em', textTransform: 'uppercase',
+                  color: '#727785', marginBottom: 6,
+                }}>
+                  {helperTitle || 'Secure access'}
+                </div>
+                <h2 style={{
+                  fontFamily: '-apple-system, "SF Pro Display", BlinkMacSystemFont, "Inter", "Helvetica Neue", sans-serif',
+                  fontSize: '1.75rem', fontWeight: 700,
+                  color: '#1d1d1f', margin: '0 0 8px',
+                  letterSpacing: '-0.02em',
+                }}>
+                  {title}
+                </h2>
+                <p style={{
+                  fontFamily: '"Plus Jakarta Sans", sans-serif',
+                  fontSize: '0.9375rem', color: '#424754',
+                  margin: 0, lineHeight: 1.55,
+                }}>
+                  {helperText || subtitle}
+                </p>
+              </div>
 
-                {children}
-              </Stack>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
+              {/* Form children */}
+              {children}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   );
 }

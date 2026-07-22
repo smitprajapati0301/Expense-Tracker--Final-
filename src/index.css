@@ -1,40 +1,462 @@
-/* Apply Apple-style system font stack and small base tweaks */
-:root {
-  --bg: #fbfbfc;
-  --text: #0f1315;
-}
+/* ═══════════════════════════════════════════════════════
+   Trackify Design System — Global Styles
+   Fonts: SF Pro (system), fallback: Inter / system-ui
+   ═══════════════════════════════════════════════════════ */
 
-/* Tailwind directives (if present) */
+/* SF Pro is Apple's system font — available natively on macOS/iOS.
+   For non-Apple devices we cascade through Inter → system-ui. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── CSS Design Tokens ── */
+:root {
+  /* Surfaces */
+  --surface:          #f5f5f7;
+  --surface-low:      #f0f2f8;
+  --surface-mid:      #e8ebf5;
+  --surface-high:     #e2e5f0;
+  --surface-highest:  #dce0ec;
+  --surface-variant:  #dce0ec;
+
+  /* Text */
+  --on-surface:         #1d1d1f;
+  --on-surface-variant: #6e6e73;
+
+  /* Brand */
+  --primary:           #0058be;
+  --primary-light:     #2170e4;
+  --primary-container: #d8e2ff;
+  --income:            #1a8a52;
+  --income-light:      #30d158;
+  --expense:           #d70015;
+
+  /* Outline */
+  --outline:       #86868b;
+  --outline-light: #d2d2d7;
+}
+
+/* ── Dark Mode Tokens ── */
+.dark {
+  --surface:          #000000;
+  --surface-low:      #1c1c1e;
+  --surface-mid:      #2c2c2e;
+  --surface-high:     #3a3a3c;
+  --surface-highest:  #48484a;
+  --surface-variant:  #2c2c2e;
+
+  --on-surface:         #f5f5f7;
+  --on-surface-variant: #98989d;
+
+  --primary:           #0a84ff;
+  --primary-light:     #409cff;
+  --primary-container: #003a88;
+  --income:            #30d158;
+  --income-light:      #34c759;
+  --expense:           #ff453a;
+
+  --outline:       #636366;
+  --outline-light: #38383a;
+}
+
+/* ── Base Resets ── */
 @layer base {
   html, body, #root {
     height: 100%;
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Inter, system-ui, "Segoe UI Emoji", "Segoe UI Symbol";
-    background-color: var(--bg);
-    color: var(--text);
+    /* SF Pro on Apple → Inter on others → system-ui as final fallback */
+    font-family: -apple-system, 'SF Pro Display', 'SF Pro Text',
+                 BlinkMacSystemFont, 'Inter', 'Helvetica Neue',
+                 system-ui, sans-serif;
+    background-color: var(--surface);
+    color: var(--on-surface);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 15px;
-    line-height: 1.35;
+    line-height: 1.5;
   }
 
-  /* subtle default input styles to match Apple aesthetic */
   input, textarea, select, button {
     font-family: inherit;
     font-size: 15px;
   }
+
+  h1, h2, h3, h4 {
+    font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont,
+                 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    font-weight: 700;
+  }
+
+  * { box-sizing: border-box; }
 }
 
-/* small helpers for mobile spacing */
-@media (max-width: 640px) {
-  .shadow-thin { box-shadow: 0 4px 14px rgba(19,24,29,0.04); }
-  .shadow-subtle { box-shadow: 0 6px 18px rgba(19,24,29,0.05); }
+/* ── Component Utilities ── */
+@layer components {
+
+  /* ── Cards ── */
+  .card {
+    background-color: white;
+    border-radius: 20px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    border: 1px solid var(--outline-light);
+  }
+  .dark .card {
+    background-color: var(--surface-mid);
+    border-color: var(--outline-light);
+  }
+
+  /* ── Primary Card (Blue balance) ── */
+  .card-primary {
+    background: linear-gradient(145deg, #0058be 0%, #2170e4 100%);
+    border-radius: 22px;
+    padding: 1.375rem;
+    box-shadow: 0 8px 32px rgba(0,88,190,0.28);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-primary::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -30px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* ── Input Fields ── */
+  .input-trackify {
+    width: 100%;
+    height: 48px;
+    padding: 0 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--outline-light);
+    background-color: var(--surface-low);
+    color: var(--on-surface);
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .input-trackify:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,88,190,0.1);
+    background-color: white;
+  }
+  .dark .input-trackify {
+    background-color: var(--surface-mid);
+    border-color: var(--outline-light);
+    color: var(--on-surface);
+  }
+  .dark .input-trackify:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(10,132,255,0.15);
+    background-color: var(--surface-high);
+  }
+
+  .textarea-trackify {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--outline-light);
+    background-color: var(--surface-low);
+    color: var(--on-surface);
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    outline: none;
+    resize: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .textarea-trackify:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,88,190,0.1);
+    background-color: white;
+  }
+  .dark .textarea-trackify:focus {
+    background-color: var(--surface-high);
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 50px;
+    width: 100%;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0058be, #2170e4);
+    color: white;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,88,190,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: -0.01em;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,88,190,0.4);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-income {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 50px;
+    width: 100%;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1a8a52, #30d158);
+    color: white;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(26,138,82,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: -0.01em;
+  }
+  .btn-income:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(26,138,82,0.4);
+  }
+  .btn-income:active { transform: translateY(0); }
+
+  .btn-outlined {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 50px;
+    width: 100%;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    border: 1.5px solid var(--primary);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .btn-outlined:hover {
+    background: rgba(0,88,190,0.05);
+    transform: translateY(-1px);
+  }
+  .dark .btn-outlined {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    height: 36px;
+    padding: 0 0.875rem;
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--on-surface-variant);
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border: 1px solid var(--outline-light);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-ghost:hover {
+    background: var(--surface-mid);
+    color: var(--on-surface);
+  }
+
+  /* ── Category Chips ── */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.4375rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
+  .chip-active {
+    background: var(--primary);
+    color: white;
+  }
+  .chip-inactive {
+    background: var(--surface-high);
+    color: var(--on-surface-variant);
+    border: 1px solid var(--outline-light);
+  }
+  .chip-inactive:hover {
+    background: var(--primary-container, #d8e2ff);
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  /* ── Bottom Navigation Bar ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 50;
+    background: rgba(245,245,247,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--outline-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+    height: 68px;
+  }
+  .dark .bottom-nav {
+    background: rgba(0,0,0,0.88);
+    border-color: var(--outline-light);
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    color: var(--on-surface-variant);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 0.25rem 1.25rem;
+    border-radius: 10px;
+    transition: color 0.18s;
+    border: none;
+    background: transparent;
+    min-width: 48px;
+  }
+  .nav-item.active { color: var(--primary); }
+  .dark .nav-item.active { color: var(--primary); }
+
+  /* ── Transaction List Item ── */
+  .tx-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid var(--outline-light);
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: default;
+  }
+  .tx-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  }
+  .dark .tx-item {
+    background: var(--surface-mid);
+    border-color: var(--outline-light);
+  }
+
+  .tx-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Bottom Sheet Overlay ── */
+  .bottom-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 40;
+    animation: fade-in 0.2s ease both;
+  }
+  .bottom-sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 50;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 1.25rem 1.375rem calc(1.25rem + env(safe-area-inset-bottom));
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.14);
+    animation: slide-up 0.36s cubic-bezier(.2,.9,.3,1) both;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  .dark .bottom-sheet {
+    background: var(--surface-mid);
+  }
+
+  /* ── Stat mini-cards ── */
+  .stat-card {
+    border-radius: 18px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* ── Section divider label ── */
+  .date-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+    padding: 0.125rem 0;
+  }
+
+  /* ── Auth page glassmorphism card ── */
+  .glass-card {
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 24px;
+  }
 }
 
-@plugin "daisyui";
+/* ── Keyframes ── */
+@keyframes fade-in  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(100%) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+
+/* ── Utility overrides ── */
+@layer utilities {
+  .animate-fade-up  { animation: fade-up 0.36s cubic-bezier(.2,.9,.3,1) both; }
+  .animate-slide-up { animation: slide-up 0.36s cubic-bezier(.2,.9,.3,1) both; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--outline-light); border-radius: 9999px; }
+}
