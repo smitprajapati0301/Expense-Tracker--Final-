@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trackify - Profile</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#dce2f3",
+                    "on-primary-fixed": "#001a42",
+                    "tertiary-container": "#da3437",
+                    "on-tertiary-fixed": "#410004",
+                    "on-primary": "#ffffff",
+                    "surface": "#f9f9ff",
+                    "primary": "#0058be",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-container": "#fffbff",
+                    "tertiary": "#b61722",
+                    "tertiary-fixed-dim": "#ffb3ad",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#004395",
+                    "inverse-on-surface": "#ebf1ff",
+                    "secondary": "#006c49",
+                    "outline-variant": "#c2c6d6",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#151c27",
+                    "surface-container-high": "#e2e8f8",
+                    "secondary-fixed-dim": "#4edea3",
+                    "secondary-fixed": "#6ffbbe",
+                    "surface-tint": "#005ac2",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-container": "#fefcff",
+                    "inverse-surface": "#2a313d",
+                    "surface-container-low": "#f0f3ff",
+                    "inverse-primary": "#adc6ff",
+                    "secondary-container": "#6cf8bb",
+                    "on-surface": "#151c27",
+                    "surface-container-highest": "#dce2f3",
+                    "surface-container": "#e7eefe",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#930013",
+                    "background": "#f9f9ff",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#ffdad7",
+                    "surface-dim": "#d3daea",
+                    "outline": "#727785",
+                    "primary-container": "#2170e4",
+                    "on-secondary-container": "#00714d",
+                    "on-secondary-fixed": "#002113",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#424754"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "stack-md": "16px",
+                    "stack-sm": "8px",
+                    "base": "8px",
+                    "stack-lg": "24px",
+                    "screen-padding": "24px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Libre Caslon Text"],
+                    "headline-md": ["Libre Caslon Text"],
+                    "headline-lg-mobile": ["Libre Caslon Text"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "display-lg": ["Libre Caslon Text"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f9f9ff;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(220, 226, 243, 0.5);
+        }
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #0058be;
+        }
+        .toggle-checkbox:checked + .toggle-label .toggle-dot {
+            transform: translateX(100%);
+            background-color: #ffffff;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-40 bg-surface/80 dark:bg-surface/80 backdrop-blur-md">
+<div class="flex justify-between items-center w-full px-screen-padding py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-variant ring-2 ring-primary/10">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a smiling young adult with warm, soft studio lighting. The person has a friendly expression and is positioned against a clean, minimalist off-white background that matches a premium financial app aesthetic. High-end editorial photography with a shallow depth of field and soft color tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK0A2I16qZE1hg9DXVCezwA13cc1Fk5cKDXvbf5T8KXEGJ5bg7KmmrTF6xut-t4pPFAxHpfYtmiE0EDgC613DdMeNkYBwGpY-ZCZ-tSYQKjlg8ySrmewmAJ4pjL52h02U5Ys3qRvp8GRicsUoBKFEX8wojwXfr7Rj9Q10b-9iSyX5VlVCfJcRNsBGOrInWXpEPXDu8_02v7zbB2vw5Q4tOtlj1OYfS3bpIkbe_KMWv3cKueVG6UJYheckvZOfnKcVAP9ptmpujqg"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Trackify</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant/50 transition-colors text-primary">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-24 pb-32 px-screen-padding max-w-lg mx-auto space-y-8">
+<!-- Profile Hero Section -->
+<section class="text-center space-y-2">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Julian Walters</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">julian.walters@trackify.com</p>
+</section>
+<!-- Goal Progress Card -->
+<section class="glass-card p-6 rounded-[24px] shadow-sm">
+<div class="flex justify-between items-end mb-4">
+<div>
+<h3 class="font-label-sm text-label-sm uppercase text-on-surface-variant mb-1">Monthly Goal</h3>
+<p class="font-headline-md text-headline-md text-primary">$4,200.00 <span class="text-on-surface-variant font-body-md text-sm">/ $6,000</span></p>
+</div>
+<span class="font-label-md text-label-md text-secondary">70% Reached</span>
+</div>
+<div class="w-full h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 70%"></div>
+</div>
+<p class="mt-4 font-body-md text-sm text-on-surface-variant leading-relaxed">
+                You're on track! You've saved <span class="font-bold text-on-surface">$340.00</span> more than last month.
+            </p>
+</section>
+<!-- Settings Groups -->
+<div class="space-y-6">
+<!-- Preferences Section -->
+<section class="space-y-3">
+<h3 class="px-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Preferences</h3>
+<div class="glass-card rounded-[24px] overflow-hidden">
+<!-- Toggle: Dark Mode -->
+<div class="flex items-center justify-between p-5 border-b border-outline-variant/20">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-container text-primary">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</div>
+<span class="font-body-lg text-body-lg">Dark Mode</span>
+</div>
+<div class="relative inline-block w-12 h-6 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-outline-variant checked:border-primary" id="dark-mode-toggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-variant cursor-pointer transition-colors duration-200" for="dark-mode-toggle"></label>
+</div>
+</div>
+<!-- Toggle: Currency -->
+<div class="flex items-center justify-between p-5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-container text-primary">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+<span class="font-body-lg text-body-lg">Currency (USD)</span>
+</div>
+<button class="font-label-md text-label-md text-primary flex items-center gap-1 hover:opacity-70 transition-opacity">
+                            Change
+                            <span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Data & Account Section -->
+<section class="space-y-3">
+<h3 class="px-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Account &amp; Data</h3>
+<div class="glass-card rounded-[24px] overflow-hidden">
+<!-- Export Data -->
+<button class="w-full flex items-center justify-between p-5 border-b border-outline-variant/20 hover:bg-surface-variant/20 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-container text-primary">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+</div>
+<span class="font-body-lg text-body-lg">Export Data</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Backup -->
+<button class="w-full flex items-center justify-between p-5 border-b border-outline-variant/20 hover:bg-surface-variant/20 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-container text-primary">
+<span class="material-symbols-outlined" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<span class="font-body-lg text-body-lg">Cloud Backup</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Logout -->
+<button class="w-full flex items-center justify-between p-5 hover:bg-error-container/10 transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 flex items-center justify-center rounded-xl bg-error-container/20 text-error">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</div>
+<span class="font-body-lg text-body-lg text-error">Logout</span>
+</div>
+<span class="material-symbols-outlined text-error/40 group-hover:text-error transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</section>
+</div>
+<!-- App Version -->
+<p class="text-center font-label-sm text-label-sm text-outline-variant py-4">
+            Trackify Premium • Version 2.4.0
+        </p>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface/80 dark:bg-surface/80 backdrop-blur-md shadow-lg rounded-t-xl border-t border-outline-variant/30">
+<div class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant/50 transition-all p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- History -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant/50 transition-all p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-sm text-label-sm mt-1">History</span>
+</a>
+<!-- Add (FAB Style) -->
+<button class="flex items-center justify-center bg-primary text-white w-14 h-14 rounded-full shadow-lg shadow-primary/30 active:scale-90 transition-all duration-200 -mt-8">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+<!-- Stats -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant/50 transition-all p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-sm text-label-sm mt-1">Stats</span>
+</a>
+<!-- Profile (Active) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed font-bold p-2 rounded-xl scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</div>
+</nav>
+<script>
+        // Micro-interactions for toggles
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        darkModeToggle.addEventListener('change', () => {
+            if(darkModeToggle.checked) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Simple haptic feedback simulation on interactions
+        document.querySelectorAll('button, a').forEach(elem => {
+            elem.addEventListener('click', () => {
+                elem.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    elem.style.transform = '';
+                }, 100);
+            });
+        });
+    </script>
+</body></html>

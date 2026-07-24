@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Libre+Caslon+Text:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#dce2f3",
+                    "on-primary-fixed": "#001a42",
+                    "tertiary-container": "#da3437",
+                    "on-tertiary-fixed": "#410004",
+                    "on-primary": "#ffffff",
+                    "surface": "#f9f9ff",
+                    "primary": "#0058be",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-container": "#fffbff",
+                    "tertiary": "#b61722",
+                    "tertiary-fixed-dim": "#ffb3ad",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#004395",
+                    "inverse-on-surface": "#ebf1ff",
+                    "secondary": "#006c49",
+                    "outline-variant": "#c2c6d6",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#151c27",
+                    "surface-container-high": "#e2e8f8",
+                    "secondary-fixed-dim": "#4edea3",
+                    "secondary-fixed": "#6ffbbe",
+                    "surface-tint": "#005ac2",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-container": "#fefcff",
+                    "inverse-surface": "#2a313d",
+                    "surface-container-low": "#f0f3ff",
+                    "inverse-primary": "#adc6ff",
+                    "secondary-container": "#6cf8bb",
+                    "on-surface": "#151c27",
+                    "surface-container-highest": "#dce2f3",
+                    "surface-container": "#e7eefe",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#930013",
+                    "background": "#f9f9ff",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#ffdad7",
+                    "surface-dim": "#d3daea",
+                    "outline": "#727785",
+                    "primary-container": "#2170e4",
+                    "on-secondary-container": "#00714d",
+                    "on-secondary-fixed": "#002113",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#424754"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "stack-md": "16px",
+                    "stack-sm": "8px",
+                    "base": "8px",
+                    "stack-lg": "24px",
+                    "screen-padding": "24px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Libre Caslon Text"],
+                    "headline-md": ["Libre Caslon Text"],
+                    "headline-lg-mobile": ["Libre Caslon Text"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "display-lg": ["Libre Caslon Text"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        @keyframes shimmer {
+            0% { transform: translateX(-150%) skewX(-20deg); }
+            100% { transform: translateX(150%) skewX(-20deg); }
+        }
+        .shimmer-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 3s infinite;
+        }
+        .gradient-bg {
+            background: radial-gradient(circle at center, #3B82F6 0%, #0058be 100%);
+        }
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden antialiased">
+<!-- Splash Screen Container -->
+<main class="relative h-screen w-full flex flex-col items-center justify-center gradient-bg overflow-hidden">
+<!-- Subtle Animated Background Elements -->
+<div class="absolute inset-0 z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-white/10 rounded-full blur-[120px] animate-pulse"></div>
+<div class="absolute bottom-[-5%] right-[-5%] w-[50%] h-[50%] bg-primary-fixed/20 rounded-full blur-[100px]"></div>
+</div>
+<!-- Central Identity Cluster -->
+<div class="relative z-10 flex flex-col items-center gap-stack-lg float-animation">
+<!-- Stylized 'T' / Wallet Icon -->
+<div class="w-24 h-24 md:w-32 md:h-32 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[32px] flex items-center justify-center shadow-2xl shimmer-effect">
+<span class="material-symbols-outlined text-white text-[48px] md:text-[64px]" style="font-variation-settings: 'FILL' 1;">
+                    account_balance_wallet
+                </span>
+</div>
+<!-- Brand Typography -->
+<div class="text-center space-y-2">
+<h1 class="font-display-lg text-white text-[48px] md:text-[64px] tracking-tight">
+                    Trackify
+                </h1>
+<p class="font-label-md text-white/80 uppercase tracking-[0.2em]">
+                    Sophisticated Wealth Management
+                </p>
+</div>
+</div>
+<!-- Footer / Loader Action -->
+<div class="absolute bottom-16 z-10 w-full flex flex-col items-center gap-6 px-screen-padding">
+<div class="w-12 h-12 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+<p class="font-body-md text-white/60 text-center max-w-[280px]">
+                Securing your financial narrative...
+            </p>
+</div>
+<!-- Ornamental Decorative Image (Background Layer) -->
+<div class="absolute inset-0 z-[-1] opacity-20 mix-blend-overlay pointer-events-none">
+<div class="w-full h-full" data-alt="A sophisticated, high-end abstract background with fluid, flowing silk-like gradients in shades of deep sapphire blue and electric azure. The lighting is ethereal and soft, creating a premium editorial feel. The aesthetic is minimalist and luxurious, evoking a sense of calm and precision within a financial context." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDoQIhN2CwX6CS0dUY1fKB8QR04c_DkSQetk3GboakaNjkmDG02qqIHAbFVg3kfwEV45WKGwEuSOOcnhjPBk9objaSP22R5xBPfHW3Xhb6K1zaJ1TNdDvPPvm-IrbhtyUJJY3DVNOBv27A5SUp-kmh2dDGXNX90JCjbcBPgsNBG7YVlA8zVQT6j211zU-ArG2K4FTtckCv3YozfJrV-LcmpOGEnBPskeq2dqZOo8Y96QwFGjX0z5HTf5v46B7qArlyGkXLRJiIBbg')"></div>
+</div>
+</main>
+<!-- Interactive Micro-interaction Script -->
+<script>
+        // Simple scale interaction for the logo on mouse move (desktop only)
+        if (window.innerWidth > 768) {
+            const container = document.querySelector('main');
+            const logo = document.querySelector('.float-animation');
+            
+            container.addEventListener('mousemove', (e) => {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                logo.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            });
+
+            container.addEventListener('mouseenter', () => {
+                logo.style.transition = 'none';
+            });
+
+            container.addEventListener('mouseleave', () => {
+                logo.style.transition = 'all 0.5s ease';
+                logo.style.transform = `rotateY(0deg) rotateX(0deg)`;
+            });
+        }
+
+        // Automatic redirect simulation (optional for splash screens)
+        /*
+        setTimeout(() => {
+            console.log("Navigating to dashboard...");
+            // window.location.href = "/dashboard";
+        }, 4000);
+        */
+    </script>
+</body></html>

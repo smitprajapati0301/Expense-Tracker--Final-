@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trackify - Add Expense</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Libre+Caslon+Text:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#dce2f3",
+                    "on-primary-fixed": "#001a42",
+                    "tertiary-container": "#da3437",
+                    "on-tertiary-fixed": "#410004",
+                    "on-primary": "#ffffff",
+                    "surface": "#f9f9ff",
+                    "primary": "#0058be",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-container": "#fffbff",
+                    "tertiary": "#b61722",
+                    "tertiary-fixed-dim": "#ffb3ad",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#004395",
+                    "inverse-on-surface": "#ebf1ff",
+                    "secondary": "#006c49",
+                    "outline-variant": "#c2c6d6",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#151c27",
+                    "surface-container-high": "#e2e8f8",
+                    "secondary-fixed-dim": "#4edea3",
+                    "secondary-fixed": "#6ffbbe",
+                    "surface-tint": "#005ac2",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-container": "#fefcff",
+                    "inverse-surface": "#2a313d",
+                    "surface-container-low": "#f0f3ff",
+                    "inverse-primary": "#adc6ff",
+                    "secondary-container": "#6cf8bb",
+                    "on-surface": "#151c27",
+                    "surface-container-highest": "#dce2f3",
+                    "surface-container": "#e7eefe",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#930013",
+                    "background": "#f9f9ff",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#ffdad7",
+                    "surface-dim": "#d3daea",
+                    "outline": "#727785",
+                    "primary-container": "#2170e4",
+                    "on-secondary-container": "#00714d",
+                    "on-secondary-fixed": "#002113",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#424754"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "stack-md": "16px",
+                    "stack-sm": "8px",
+                    "base": "8px",
+                    "stack-lg": "24px",
+                    "screen-padding": "24px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Libre Caslon Text"],
+                    "headline-md": ["Libre Caslon Text"],
+                    "headline-lg-mobile": ["Libre Caslon Text"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "display-lg": ["Libre Caslon Text"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bottom-sheet-gradient {
+            background: linear-gradient(180deg, rgba(249, 249, 255, 0.0) 0%, rgba(249, 249, 255, 1) 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        input:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        .active-chip {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden h-screen flex flex-col items-center justify-end">
+<!-- Backdrop Shadow (Simulating the screen behind the bottom sheet) -->
+<div class="fixed inset-0 bg-inverse-surface/10 flex flex-col">
+<!-- Mock Top App Bar -->
+<header class="flex justify-between items-center w-full px-screen-padding py-4 max-w-7xl mx-auto bg-surface/80 backdrop-blur-md">
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a young person for a user profile, soft natural lighting, minimalist background, high-end editorial photography style with a clean aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCifTLORevU5xt4aoBwYGMQf3oRF_hDg_53rC5DSnhlfDtU8FmAAuSzTBfAZqi_pOetqDctXBaYysTyZC1CqNWw7dRfS7VtakLkhAQvgrtaTxf-zRLZ4l7hU1knAmaGZdWYTsGJxA4mnMKgrG2xQQwqFrkx9Io_Zeci92l1JVESRx2oKXATaDPxOnwNqB8H5u7eEcMzIqBmwxkpJ9ptaJOOI-OqbUPMizm6-sT289ty5_AEeR-CWXqnvkMK8rM-CYyWhhKpMsa9Cw"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Trackify</h1>
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</header>
+<!-- Background Content (Simulated Dashboard) -->
+<main class="flex-1 px-screen-padding pt-stack-lg">
+<div class="w-full h-32 rounded-3xl bg-surface-container-high mb-stack-md animate-pulse"></div>
+<div class="w-full h-64 rounded-3xl bg-surface-container mb-stack-md animate-pulse"></div>
+</main>
+</div>
+<!-- Bottom Sheet Main Container -->
+<div class="relative w-full max-w-2xl bg-surface-container-lowest rounded-t-[32px] shadow-[0_-12px_40px_rgba(0,0,0,0.08)] flex flex-col z-50 transform translate-y-0 transition-transform duration-500 ease-out">
+<!-- Handle -->
+<div class="w-full flex justify-center py-4">
+<div class="w-12 h-1.5 bg-outline-variant/40 rounded-full"></div>
+</div>
+<div class="px-screen-padding pb-10 overflow-y-auto max-h-[795px] custom-scrollbar">
+<!-- Header Section -->
+<div class="flex justify-between items-center mb-stack-lg">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Add Expense</h2>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">close</span>
+</button>
+</div>
+<!-- Large Amount Input -->
+<div class="flex flex-col items-center justify-center py-stack-lg mb-stack-lg bg-surface-container-low rounded-[24px] border border-outline-variant/10">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-2">Total Amount</span>
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-primary/40">$</span>
+<input class="w-full text-center font-display-lg text-display-lg text-primary bg-transparent border-none p-0 focus:ring-0" id="amount-input" placeholder="0.00" type="text" value="0.00"/>
+</div>
+</div>
+<!-- Categories Horizontal Scroll -->
+<div class="mb-stack-lg">
+<div class="flex justify-between items-center mb-stack-sm">
+<span class="font-label-md text-label-md text-on-surface">Select Category</span>
+<span class="text-primary font-label-sm text-label-sm">View All</span>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+<!-- Category: Food -->
+<button class="active-chip flex items-center gap-2 px-4 py-3 bg-[#FFF3E0] text-[#E65100] rounded-2xl border border-[#FFE0B2] flex-shrink-0 transition-all active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+<span class="font-label-md text-label-md">Food</span>
+</button>
+<!-- Category: Transport -->
+<button class="flex items-center gap-2 px-4 py-3 bg-primary-fixed text-primary rounded-2xl border border-primary/10 flex-shrink-0 transition-all active:scale-95">
+<span class="material-symbols-outlined">directions_car</span>
+<span class="font-label-md text-label-md">Transport</span>
+</button>
+<!-- Category: Bills -->
+<button class="flex items-center gap-2 px-4 py-3 bg-tertiary-fixed text-tertiary rounded-2xl border border-tertiary/10 flex-shrink-0 transition-all active:scale-95">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-md text-label-md">Bills</span>
+</button>
+<!-- Category: Health -->
+<button class="flex items-center gap-2 px-4 py-3 bg-secondary-fixed text-on-secondary-container rounded-2xl border border-secondary/10 flex-shrink-0 transition-all active:scale-95">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="font-label-md text-label-md">Health</span>
+</button>
+</div>
+</div>
+<!-- Form Fields -->
+<div class="space-y-stack-md mb-stack-lg">
+<!-- Merchant (Optional) -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant px-1" for="merchant">Merchant (Optional)</label>
+<div class="flex items-center gap-3 bg-surface-container px-4 h-[56px] rounded-2xl border border-outline-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">store</span>
+<input class="flex-1 bg-transparent border-none p-0 focus:ring-0 text-on-surface placeholder:text-outline" id="merchant" placeholder="Where did you spend?" type="text"/>
+</div>
+</div>
+<!-- Notes -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant px-1" for="notes">Notes</label>
+<div class="flex items-center gap-3 bg-surface-container px-4 py-3 rounded-2xl border border-outline-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">description</span>
+<textarea class="flex-1 bg-transparent border-none p-0 focus:ring-0 text-on-surface placeholder:text-outline resize-none" id="notes" placeholder="Add some context..." rows="2"></textarea>
+</div>
+</div>
+<!-- Date & Split Option -->
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant px-1">Date</label>
+<div class="flex items-center gap-3 bg-surface-container px-4 h-[56px] rounded-2xl border border-outline-variant/30">
+<span class="material-symbols-outlined text-on-surface-variant">calendar_today</span>
+<span class="font-body-md text-body-md text-on-surface">Oct 24, 2023</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant px-1">Type</label>
+<div class="flex items-center gap-3 bg-surface-container px-4 h-[56px] rounded-2xl border border-outline-variant/30">
+<span class="material-symbols-outlined text-on-surface-variant">payments</span>
+<span class="font-body-md text-body-md text-on-surface">One-time</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Save Button -->
+<button class="w-full h-[60px] bg-gradient-to-r from-primary to-primary-container text-on-primary font-body-lg text-body-lg rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                Save Expense
+            </button>
+</div>
+</div>
+<!-- Script for interaction -->
+<script>
+        // Simple input focus formatting logic
+        const amountInput = document.getElementById('amount-input');
+        amountInput.addEventListener('focus', () => {
+            if (amountInput.value === '0.00') {
+                amountInput.value = '';
+            }
+        });
+        amountInput.addEventListener('blur', () => {
+            if (amountInput.value === '') {
+                amountInput.value = '0.00';
+            }
+        });
+
+        // Category Selection Visual Toggle
+        const categoryChips = document.querySelectorAll('.overflow-x-auto button');
+        categoryChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                categoryChips.forEach(c => c.classList.remove('active-chip', 'ring-2', 'ring-primary/20'));
+                chip.classList.add('active-chip', 'ring-2', 'ring-primary/20');
+            });
+        });
+    </script>
+</body></html>
