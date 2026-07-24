@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import '../index.css';
 import track from '../assets/1.png';
-import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import { collection, query as firestoreQuery, where, onSnapshot, doc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, writeBatch } from 'firebase/firestore';
 
 /* ─── Currency ────────────────────────────────────────── */
 const CUR = '₹';
@@ -76,6 +77,42 @@ const NAV_TABS = [
 /* ═══════════════════════════════════════════════════════
    MAIN DASHBOARD
    ═══════════════════════════════════════════════════════ */
+const seedDemoData = async (user) => {
+  try {
+    const batch = writeBatch(db);
+    const now = new Date().toISOString();
+    const yest = new Date(Date.now() - 86400000).toISOString();
+    const twodago = new Date(Date.now() - 172800000).toISOString();
+
+    const demoItems = [
+      { amount: 350,    date: now,     type: 'Coffee',    remarks: 'Café Coffee Day', isIncome: false },
+      { amount: 3200,   date: now,     type: 'Groceries', remarks: 'Reliance Fresh',  isIncome: false },
+      { amount: 15000,  date: yest,    type: 'Rent',      remarks: 'Apartment 4B',    isIncome: false },
+      { amount: 85000,  date: yest,    type: 'Income',    remarks: 'Monthly salary',  isIncome: true  },
+      { amount: 650,    date: yest,    type: 'Transport', remarks: 'Ola cab',         isIncome: false },
+      { amount: 1800,   date: twodago, type: 'Shopping',  remarks: 'Myntra order',    isIncome: false },
+      { amount: 2100,   date: twodago, type: 'Bills',     remarks: 'Electricity',     isIncome: false },
+      { amount: 500,    date: twodago, type: 'Coffee',    remarks: 'Starbucks',       isIncome: false },
+    ];
+
+    demoItems.forEach((item) => {
+      const docRef = doc(collection(db, 'expenses'));
+      batch.set(docRef, {
+        ...item,
+        date: Timestamp.fromDate(new Date(item.date)),
+        userId: user.uid,
+        userEmail: user.email,
+        createdAt: serverTimestamp()
+      });
+    });
+
+    await batch.commit();
+    console.log("Seeded initial demo data to Firestore in a single batch.");
+  } catch (err) {
+    console.error("Error seeding initial data:", err);
+  }
+};
+
 export default function Dashboard() {
   const navigate = useNavigate();
 
@@ -88,6 +125,8 @@ export default function Dashboard() {
   const [query, setQuery]             = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [isDark, setIsDark]           = useState(false);
+  const [currentUser, setCurrentUser] = useState(auth.currentUser);
+  const [loading, setLoading]         = useState(true);
 
   /* ── Stats period state ── */
   const [statsPeriod, setStatsPeriod]   = useState('month');     // 'today'|'week'|'month'|'year'
@@ -105,22 +144,60 @@ export default function Dashboard() {
     document.documentElement.classList.toggle('dark', isDark);
   }, [isDark]);
 
-  /* ── Demo data ── */
+  /* ── Reactive Auth State Listener ── */
   useEffect(() => {
-    const now  = new Date().toISOString();
-    const yest = new Date(Date.now() - 86400000).toISOString();
-    const twodago = new Date(Date.now() - 172800000).toISOString();
-    setItems([
-      { id:'1', amount:350,    date:now,     type:'Coffee',    remarks:'Café Coffee Day', isIncome:false },
-      { id:'2', amount:3200,   date:now,     type:'Groceries', remarks:'Reliance Fresh',  isIncome:false },
-      { id:'3', amount:15000,  date:yest,    type:'Rent',      remarks:'Apartment 4B',    isIncome:false },
-      { id:'4', amount:85000,  date:yest,    type:'Income',    remarks:'Monthly salary',  isIncome:true  },
-      { id:'5', amount:650,    date:yest,    type:'Transport', remarks:'Ola cab',         isIncome:false },
-      { id:'6', amount:1800,   date:twodago, type:'Shopping',  remarks:'Myntra order',    isIncome:false },
-      { id:'7', amount:2100,   date:twodago, type:'Bills',     remarks:'Electricity',     isIncome:false },
-      { id:'8', amount:500,    date:twodago, type:'Coffee',    remarks:'Starbucks',       isIncome:false },
-    ]);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
   }, []);
+
+  /* ── Firestore data sync ── */
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const q = firestoreQuery(
+      collection(db, 'expenses'),
+      where('userId', '==', currentUser.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        seedDemoData(currentUser);
+        return;
+      }
+
+      const docs = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        let formattedDate = new Date().toISOString();
+        if (data.date) {
+          formattedDate = typeof data.date === 'string' ? data.date : new Date(data.date.seconds * 1000).toISOString();
+        } else if (data.createdAt) {
+          formattedDate = new Date(data.createdAt.seconds * 1000).toISOString();
+        }
+
+        const rawAmount = Number(data.amount || 0);
+        const isInc = data.isIncome === true || data.type === 'Income';
+
+        return {
+          id: docSnap.id,
+          ...data,
+          date: formattedDate,
+          amount: Math.abs(rawAmount),
+          isIncome: isInc
+        };
+      });
+
+      docs.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setItems(docs);
+      setLoading(false);
+    }, (err) => {
+      console.error('Error fetching expenses snapshot:', err);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
 
   /* ── Derived values ── */
   const totalIncome   = useMemo(() => items.filter(i=>i.isIncome).reduce((s,i)=>s+Number(i.amount),0), [items]);
@@ -302,13 +379,36 @@ export default function Dashboard() {
     setShowAddSheet(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const entry = { id: editingId||Date.now().toString(), ...form };
-    setItems(prev => editingId ? prev.map(p=>p.id===editingId?entry:p) : [entry,...prev]);
-    setForm({ amount:'', date:new Date().toISOString().split('T')[0], type:'', remarks:'', isIncome:false });
-    setShowAddSheet(false);
-    setEditingId(null);
+    if (!currentUser) return;
+
+    const data = {
+      userId: currentUser.uid,
+      userEmail: currentUser.email,
+      amount: parseFloat(form.amount),
+      date: Timestamp.fromDate(new Date(form.date)),
+      type: form.isIncome ? 'Income' : (form.type || 'Other'),
+      remarks: (form.remarks || '').trim(),
+      isIncome: form.isIncome
+    };
+
+    try {
+      if (editingId) {
+        await updateDoc(doc(db, 'expenses', editingId), data);
+      } else {
+        await addDoc(collection(db, 'expenses'), {
+          ...data,
+          createdAt: serverTimestamp()
+        });
+      }
+      setForm({ amount:'', date:new Date().toISOString().split('T')[0], type:'', remarks:'', isIncome:false });
+      setShowAddSheet(false);
+      setEditingId(null);
+    } catch (err) {
+      console.error('Error saving transaction to Firestore:', err);
+      alert('Failed to save transaction: ' + err.message);
+    }
   };
 
   const handleEdit = (it) => {
@@ -318,7 +418,13 @@ export default function Dashboard() {
     setShowAddSheet(true);
   };
 
-  const handleDelete = (it) => setItems(prev=>prev.filter(x=>x.id!==it.id));
+  const handleDelete = async (it) => {
+    try {
+      await deleteDoc(doc(db, 'expenses', it.id));
+    } catch (err) {
+      console.error('Error deleting transaction from Firestore:', err);
+    }
+  };
 
   const handleLogout = async () => {
     try { await signOut(auth); navigate('/login'); }
@@ -395,6 +501,21 @@ export default function Dashboard() {
   };
 
   /* ═══ RENDER ═══════════════════════════════════════════ */
+  if (loading) {
+    return (
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh', background:'var(--surface)', gap:16 }}>
+        <div style={{ width:40, height:40, borderRadius:'50%', border:'3px solid var(--outline-light)', borderTopColor:'var(--primary)', animation:'spin 1s linear infinite' }}/>
+        <div style={{ fontSize:'0.875rem', fontWeight:600, color:'var(--on-surface-variant)', fontFamily:'inherit' }}>Loading your dashboard…</div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen" style={{ background:'var(--surface)', color:'var(--on-surface)', paddingBottom:88 }}>
 
@@ -466,7 +587,7 @@ export default function Dashboard() {
                   Total Balance
                 </div>
                 <div style={{ fontSize:'clamp(1.75rem,5vw,2.5rem)', fontWeight:700, letterSpacing:'-0.025em', marginBottom:18 }}>
-                  {CUR}{fmtINR(balance)}
+                  {balance < 0 ? `-${CUR}${fmtINR(Math.abs(balance))}` : `${CUR}${fmtINR(balance)}`}
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
                   {[
@@ -911,9 +1032,9 @@ export default function Dashboard() {
                 👤
               </div>
               <h2 style={{ fontSize:'1.25rem', fontWeight:700, margin:'0 0 4px', color:'var(--on-surface)', letterSpacing:'-0.01em' }}>
-                {auth.currentUser?.displayName || 'User'}
+                {currentUser?.displayName || 'User'}
               </h2>
-              <div style={{ fontSize:'0.875rem', color:'var(--on-surface-variant)' }}>{auth.currentUser?.email}</div>
+              <div style={{ fontSize:'0.875rem', color:'var(--on-surface-variant)' }}>{currentUser?.email}</div>
             </div>
 
             {/* Monthly goal */}
