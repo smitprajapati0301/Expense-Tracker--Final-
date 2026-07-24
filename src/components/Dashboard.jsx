@@ -148,9 +148,12 @@ export default function Dashboard() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+      if (!user) {
+        navigate('/login');
+      }
     });
     return () => unsubscribe();
-  }, []);
+  }, [navigate]);
 
   /* ── Firestore data sync ── */
   useEffect(() => {

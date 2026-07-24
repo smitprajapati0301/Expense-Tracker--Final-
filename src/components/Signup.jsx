@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from './AuthLayout';
@@ -13,6 +13,13 @@ const Signup = () => {
     const [error, setError]       = useState('');
     const [loading, setLoading]   = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) navigate('/dashboard');
+        });
+        return () => unsubscribe();
+    }, [navigate]);
 
     const handleSignup = async (e) => {
         e.preventDefault();
